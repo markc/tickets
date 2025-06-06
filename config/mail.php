@@ -115,4 +115,16 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Support Email Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Email domain for support ticket system. Tickets will use addresses
+    | like support+{uuid}@{domain} for email-to-ticket functionality.
+    |
+    */
+
+    'support_domain' => env('MAIL_SUPPORT_DOMAIN', env('MAIL_FROM_ADDRESS') ? explode('@', env('MAIL_FROM_ADDRESS'))[1] ?? 'localhost' : 'localhost'),
+
 ];
