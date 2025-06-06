@@ -36,7 +36,7 @@ A comprehensive customer support ticketing system built with Laravel 12 and Fila
 ## Quick Start
 
 ### Prerequisites
-- PHP 8.2+
+- PHP 8.3+
 - Composer
 - Node.js 18+ and npm
 

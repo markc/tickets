@@ -9,7 +9,7 @@ This is a comprehensive ticketing system built with Laravel 12 and Filament 3.3,
 ## Development Setup
 
 ### Prerequisites
-- PHP 8.2+
+- PHP 8.3+
 - Composer
 - Node.js 18+ and npm
 - SQLite (for development)

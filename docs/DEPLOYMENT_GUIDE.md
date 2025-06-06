@@ -4,7 +4,7 @@ This guide covers deploying the ticketing system to production environments.
 
 ## Prerequisites
 
-- PHP 8.2 or higher
+- PHP 8.3 or higher
 - Composer
 - Node.js and npm
 - Web server (Apache/Nginx)
@@ -23,10 +23,10 @@ This guide covers deploying the ticketing system to production environments.
 
 **PHP Extensions:**
 ```bash
-# Required extensions
-php-cli php-fpm php-mysql php-pgsql php-sqlite3
-php-zip php-xml php-mbstring php-curl php-gd
-php-json php-bcmath php-tokenizer php-fileinfo
+# Required extensions (PHP 8.3+)
+php8.3-cli php8.3-fpm php8.3-mysql php8.3-pgsql php8.3-sqlite3
+php8.3-zip php8.3-xml php8.3-mbstring php8.3-curl php8.3-gd
+php8.3-json php8.3-bcmath php8.3-tokenizer php8.3-fileinfo
 
 # For email parsing (optional)
 php-mailparse
@@ -47,7 +47,7 @@ server {
     }
 
     location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
