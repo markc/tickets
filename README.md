@@ -1,5 +1,7 @@
 # Ticketing System
 
+[![Code Quality](https://github.com/markc/tickets/workflows/Code%20Quality/badge.svg)](https://github.com/markc/tickets/actions)
+
 A comprehensive customer support ticketing system built with Laravel 12 and Filament 3.3, featuring email-to-ticket integration, role-based access control, and a complete support workflow.
 
 ## Features
