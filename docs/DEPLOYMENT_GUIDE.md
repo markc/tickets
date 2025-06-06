@@ -39,7 +39,7 @@ php-mailparse
 server {
     listen 80;
     server_name your-domain.com;
-    root /var/www/ticketing-system/public;
+    root /var/www/tickets/public;
     index index.php;
 
     location / {
@@ -90,8 +90,8 @@ server {
 
 ```bash
 # Clone repository
-git clone <repository-url> /var/www/ticketing-system
-cd /var/www/ticketing-system
+git clone <repository-url> /var/www/tickets
+cd /var/www/tickets
 
 # Install dependencies
 composer install --no-dev --optimize-autoloader
@@ -99,10 +99,10 @@ npm install
 npm run build
 
 # Set permissions
-sudo chown -R www-data:www-data /var/www/ticketing-system
-sudo chmod -R 755 /var/www/ticketing-system
-sudo chmod -R 775 /var/www/ticketing-system/storage
-sudo chmod -R 775 /var/www/ticketing-system/bootstrap/cache
+sudo chown -R www-data:www-data /var/www/tickets
+sudo chmod -R 755 /var/www/tickets
+sudo chmod -R 775 /var/www/tickets/storage
+sudo chmod -R 775 /var/www/tickets/bootstrap/cache
 ```
 
 ### 2. Environment Configuration
@@ -202,7 +202,7 @@ opcache.fast_shutdown=1
 ```ini
 [program:ticketing-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/ticketing-system/artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
+command=php /var/www/tickets/artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -210,7 +210,7 @@ killasgroup=true
 user=www-data
 numprocs=2
 redirect_stderr=true
-stdout_logfile=/var/www/ticketing-system/storage/logs/worker.log
+stdout_logfile=/var/www/tickets/storage/logs/worker.log
 stopwaitsecs=3600
 ```
 
@@ -225,7 +225,7 @@ sudo supervisorctl start ticketing-worker:*
 
 Add to crontab (`sudo crontab -e`):
 ```bash
-* * * * * cd /var/www/ticketing-system && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /var/www/tickets && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 ## SSL/TLS Configuration
@@ -275,10 +275,10 @@ server {
 
 ```bash
 # Configure logrotate
-sudo nano /etc/logrotate.d/ticketing-system
+sudo nano /etc/logrotate.d/tickets
 
 # Content:
-/var/www/ticketing-system/storage/logs/*.log {
+/var/www/tickets/storage/logs/*.log {
     daily
     missingok
     rotate 52
@@ -318,7 +318,7 @@ Consider integrating with error tracking services:
 #!/bin/bash
 # /usr/local/bin/backup-ticketing-db.sh
 
-BACKUP_DIR="/var/backups/ticketing-system"
+BACKUP_DIR="/var/backups/tickets"
 DATE=$(date +%Y%m%d_%H%M%S)
 DB_NAME="ticketing_system"
 DB_USER="ticketing_user"
@@ -341,8 +341,8 @@ find $BACKUP_DIR -name "ticketing_db_*.sql.gz" -mtime +30 -delete
 #!/bin/bash
 # /usr/local/bin/backup-ticketing-files.sh
 
-BACKUP_DIR="/var/backups/ticketing-system"
-APP_DIR="/var/www/ticketing-system"
+BACKUP_DIR="/var/backups/tickets"
+APP_DIR="/var/www/tickets"
 DATE=$(date +%Y%m%d_%H%M%S)
 
 # Backup storage directory (uploads, logs, etc.)
@@ -362,12 +362,12 @@ find $BACKUP_DIR -name "env_*.backup" -mtime +30 -delete
 
 ```bash
 # Set secure permissions
-sudo chown -R www-data:www-data /var/www/ticketing-system
-sudo find /var/www/ticketing-system -type f -exec chmod 644 {} \;
-sudo find /var/www/ticketing-system -type d -exec chmod 755 {} \;
-sudo chmod -R 775 /var/www/ticketing-system/storage
-sudo chmod -R 775 /var/www/ticketing-system/bootstrap/cache
-sudo chmod 600 /var/www/ticketing-system/.env
+sudo chown -R www-data:www-data /var/www/tickets
+sudo find /var/www/tickets -type f -exec chmod 644 {} \;
+sudo find /var/www/tickets -type d -exec chmod 755 {} \;
+sudo chmod -R 775 /var/www/tickets/storage
+sudo chmod -R 775 /var/www/tickets/bootstrap/cache
+sudo chmod 600 /var/www/tickets/.env
 ```
 
 ### 2. Firewall Configuration
@@ -429,8 +429,8 @@ php artisan telescope:prune --hours=168  # Keep 1 week
 
 **Permission Errors:**
 ```bash
-sudo chown -R www-data:www-data /var/www/ticketing-system/storage
-sudo chmod -R 775 /var/www/ticketing-system/storage
+sudo chown -R www-data:www-data /var/www/tickets/storage
+sudo chmod -R 775 /var/www/tickets/storage
 ```
 
 **Cache Issues:**
