@@ -3,7 +3,7 @@
 ## Architecture Overview
 
 ### Technology Stack
-- **Framework**: Laravel 12.x (requires PHP 8.2+)
+- **Framework**: Laravel 12.x (requires PHP 8.3+)
 - **Admin Panel**: Filament 3.3 at `/admin`
 - **Authentication**: Laravel Breeze
 - **Database**: SQLite (file: `database/database.sqlite`)
