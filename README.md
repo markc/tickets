@@ -1,61 +1,164 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Ticketing System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A comprehensive customer support ticketing system built with Laravel 12 and Filament 3.3, featuring email-to-ticket integration, role-based access control, and a complete support workflow.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### ✅ Core Functionality
+- **Complete ticketing workflow** with status tracking and priority management
+- **Role-based access control** (Customers, Agents, Admins)
+- **Email-to-ticket integration** with real-time processing
+- **File attachment support** with secure validation
+- **FAQ system** with search and department filtering
+- **Automatic ticket assignment** using round-robin algorithm
+- **Real-time notifications** via email with threading support
+- **Comprehensive audit trails** for all ticket activities
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 🎯 User Experience
+- **Customer portal** for ticket creation and tracking
+- **Admin panel** with advanced filtering and bulk actions
+- **Email threading** for seamless communication
+- **Mobile-responsive design** with Tailwind CSS
+- **Dashboard widgets** with statistics and recent activity
+- **Timeline view** showing complete ticket history
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🔧 Technical Features
+- **Laravel 12** with modern PHP 8.2+ features
+- **Filament 3.3** admin panel with dark mode
+- **SQLite** for development, MySQL/PostgreSQL for production
+- **Pest PHP** testing framework with comprehensive coverage
+- **Vite** build system with hot reload
+- **Queue-based** email processing for performance
+- **UUID-based** public routing for security
 
-## Learning Laravel
+## Quick Start
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Prerequisites
+- PHP 8.2+
+- Composer
+- Node.js 18+ and npm
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+# Clone and setup
+git clone <repository-url> ticketing-system
+cd ticketing-system
 
-## Laravel Sponsors
+# Install dependencies
+composer install
+npm install
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# Environment setup
+cp .env.example .env
+php artisan key:generate
 
-### Premium Partners
+# Database and assets
+php artisan migrate --seed
+npm run dev
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# Start development server
+composer dev
+```
+
+Visit http://127.0.0.1:8000 to access the application.
+
+### Test Accounts
+- **Admin**: admin@example.com / password
+- **Agent**: agent@example.com / password  
+- **Customer**: customer@example.com / password
+
+## Documentation
+
+### 📖 User Guides
+- **[User Guide](docs/USER_GUIDE.md)** - Complete guide for customers, agents, and administrators
+- **[Ticketing System Overview](docs/TICKETING_SYSTEM.md)** - Original system requirements and specifications
+
+### 🛠️ Development
+- **[CLAUDE.md](CLAUDE.md)** - Development setup and architecture guide
+- **[API Reference](docs/API_REFERENCE.md)** - Technical documentation and code reference
+
+### 🚀 Deployment
+- **[Deployment Guide](docs/DEPLOYMENT_GUIDE.md)** - Production deployment instructions
+- **[Email Server Setup](docs/EMAIL_SERVER_SETUP.md)** - Mail server configuration for email-to-ticket
+
+## Development
+
+### Starting Development Environment
+```bash
+composer dev  # Starts PHP server, queue worker, log viewer, and Vite
+```
+
+### Running Tests
+```bash
+composer test              # Full test suite
+php artisan test          # Laravel test runner
+./vendor/bin/pint         # Code formatting
+```
+
+### Key Commands
+```bash
+php artisan migrate --seed           # Reset database with sample data
+php artisan ticket:process-email     # Process email (called by mail server)
+php artisan queue:listen            # Process background jobs
+```
+
+## Architecture
+
+### Technology Stack
+- **Backend**: Laravel 12, PHP 8.2+
+- **Admin Panel**: Filament 3.3
+- **Frontend**: Blade templates, Tailwind CSS 4.0, Alpine.js
+- **Database**: SQLite (dev), MySQL/PostgreSQL (prod)
+- **Email**: php-mime-mail-parser for email processing
+- **Testing**: Pest PHP with Laravel integration
+
+### Key Components
+- **Customer Portal**: Ticket creation, viewing, and replies
+- **Admin Panel**: Complete ticket management with filtering and bulk actions
+- **Email Integration**: Bidirectional email-to-ticket processing
+- **FAQ System**: Knowledge base with search and categorization
+- **Notification System**: Email notifications with proper threading
+- **Assignment System**: Automatic round-robin ticket distribution
+
+## Email-to-Ticket Features
+
+### How It Works
+1. **Email arrives** at `support@yourdomain.com`
+2. **Mail server** pipes email to Laravel command
+3. **System processes** email and creates ticket/reply
+4. **Notifications sent** with Reply-To headers for threading
+5. **Customers reply** to continue conversation
+
+### Email Address Patterns
+- **New tickets**: `support@yourdomain.com`
+- **Replies**: `support+{ticket-uuid}@yourdomain.com`
+- **Automatic routing** based on UUID in email address
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Follow Laravel coding standards
+2. Write tests for new features
+3. Update documentation as needed
+4. Use `./vendor/bin/pint` for code formatting
+5. Submit pull requests with clear descriptions
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](LICENSE).
+
+## Support
+
+For questions about using this system:
+- Check the [User Guide](docs/USER_GUIDE.md)
+- Review [API Reference](docs/API_REFERENCE.md) for technical details
+- Create an issue for bugs or feature requests
+
+For development questions:
+- Refer to [CLAUDE.md](CLAUDE.md) for setup and architecture
+- Check [Deployment Guide](docs/DEPLOYMENT_GUIDE.md) for production setup
+- Review the codebase for examples and patterns
+
+---
+
+**Built with ❤️ using Laravel and Filament**
