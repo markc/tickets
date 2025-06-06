@@ -44,8 +44,8 @@ A comprehensive customer support ticketing system built with Laravel 12 and Fila
 
 ```bash
 # Clone and setup
-git clone <repository-url> ticketing-system
-cd ticketing-system
+git clone <repository-url> tickets
+cd tickets
 
 # Install dependencies
 composer install
