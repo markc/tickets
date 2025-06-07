@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a comprehensive ticketing system built with Laravel 12 and Filament 3.3, featuring email-to-ticket integration, role-based access control, and a complete customer support workflow.
+This is a comprehensive customer support system (TIKM) built with Laravel 12 and Filament 3.3, featuring email-to-ticket integration, role-based access control, and a complete customer support workflow.
 
 ## Development Setup
 
@@ -304,4 +304,4 @@ When extending this system:
 5. Consider security implications
 6. Update this CLAUDE.md file for significant architectural changes
 
-This ticketing system provides a solid foundation for customer support operations with room for customization and expansion based on specific business needs.
+TIKM provides a solid foundation for customer support operations with room for customization and expansion based on specific business needs.

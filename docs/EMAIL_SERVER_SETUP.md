@@ -1,6 +1,6 @@
 # Email-to-Ticket Server Configuration Guide
 
-This guide provides step-by-step instructions for configuring a local Postfix/Dovecot mail server to process incoming emails and automatically create tickets or replies in the ticketing system.
+This guide provides step-by-step instructions for configuring a local Postfix/Dovecot mail server to process incoming emails and automatically create tickets or replies in TIKM.
 
 ## Overview
 

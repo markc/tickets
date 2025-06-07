@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This guide covers deploying the ticketing system to production environments.
+This guide covers deploying TIKM to production environments.
 
 ## Prerequisites
 
@@ -120,7 +120,7 @@ php artisan storage:link
 
 **Production .env Configuration:**
 ```bash
-APP_NAME="Your Ticketing System"
+APP_NAME="TIKM"
 APP_ENV=production
 APP_KEY=base64:your-generated-key
 APP_DEBUG=false
@@ -131,8 +131,8 @@ APP_URL=https://your-domain.com
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=ticketing_system
-DB_USERNAME=ticketing_user
+DB_DATABASE=tikm
+DB_USERNAME=tikm_user
 DB_PASSWORD=secure_password
 
 # Mail Configuration
@@ -198,9 +198,9 @@ opcache.fast_shutdown=1
 
 ### 2. Queue Worker Setup
 
-**Supervisor Configuration (`/etc/supervisor/conf.d/ticketing-worker.conf`):**
+**Supervisor Configuration (`/etc/supervisor/conf.d/tikm-worker.conf`):**
 ```ini
-[program:ticketing-worker]
+[program:tikm-worker]
 process_name=%(program_name)s_%(process_num)02d
 command=php /var/www/tickets/artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
 autostart=true
@@ -218,7 +218,7 @@ stopwaitsecs=3600
 # Start supervisor
 sudo supervisorctl reread
 sudo supervisorctl update
-sudo supervisorctl start ticketing-worker:*
+sudo supervisorctl start tikm-worker:*
 ```
 
 ### 3. Cron Job Setup
@@ -316,21 +316,21 @@ Consider integrating with error tracking services:
 
 ```bash
 #!/bin/bash
-# /usr/local/bin/backup-ticketing-db.sh
+# /usr/local/bin/backup-tikm-db.sh
 
 BACKUP_DIR="/var/backups/tickets"
 DATE=$(date +%Y%m%d_%H%M%S)
-DB_NAME="ticketing_system"
-DB_USER="ticketing_user"
+DB_NAME="tikm"
+DB_USER="tikm_user"
 DB_PASSWORD="secure_password"
 
 mkdir -p $BACKUP_DIR
 
 # Create backup
-mysqldump -u $DB_USER -p$DB_PASSWORD $DB_NAME | gzip > $BACKUP_DIR/ticketing_db_$DATE.sql.gz
+mysqldump -u $DB_USER -p$DB_PASSWORD $DB_NAME | gzip > $BACKUP_DIR/tikm_db_$DATE.sql.gz
 
 # Keep only last 30 days
-find $BACKUP_DIR -name "ticketing_db_*.sql.gz" -mtime +30 -delete
+find $BACKUP_DIR -name "tikm_db_*.sql.gz" -mtime +30 -delete
 
 # Crontab entry: 0 2 * * * /usr/local/bin/backup-ticketing-db.sh
 ```
@@ -465,4 +465,4 @@ php artisan queue:restart
 - Use CDN for static assets
 - Enable gzip compression
 
-This deployment guide provides a comprehensive foundation for running the ticketing system in production environments securely and efficiently.
+This deployment guide provides a comprehensive foundation for running TIKM in production environments securely and efficiently.
