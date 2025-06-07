@@ -4,7 +4,15 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    if (auth()->check()) {
+        $user = auth()->user();
+        if ($user->isAdmin() || $user->isAgent()) {
+            return redirect('/admin');
+        } else {
+            return redirect('/dashboard');
+        }
+    }
+    return redirect('/admin/login');
 });
 
 Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])

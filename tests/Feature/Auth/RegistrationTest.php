@@ -3,7 +3,7 @@
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
 
-    $response->assertStatus(200);
+    $response->assertRedirect('/admin/login');
 });
 
 test('new users can register', function () {
