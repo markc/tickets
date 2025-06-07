@@ -1,8 +1,8 @@
-# TIKM
+# TIKM (Ticket Manager)
 
-[![Code Quality](https://github.com/markc/tickets/workflows/Code%20Quality/badge.svg)](https://github.com/markc/tickets/actions)
+[![Code Quality](https://github.com/markc/tikm/workflows/Code%20Quality/badge.svg)](https://github.com/markc/tikm/actions)
 
-A comprehensive customer support system built with Laravel 12 and Filament 3.3, featuring email-to-ticket integration, role-based access control, and a complete support workflow.
+A simple customer support system built with Laravel 12, Filament 3.3 and Claude Code, featuring email-to-ticket integration, role-based access control, and a complete support workflow.
 
 ## Features
 
@@ -25,7 +25,7 @@ A comprehensive customer support system built with Laravel 12 and Filament 3.3, 
 - **Timeline view** showing complete ticket history
 
 ### 🔧 Technical Features
-- **Laravel 12** with modern PHP 8.2+ features
+- **Laravel 12** with modern PHP 8.3+ features
 - **Filament 3.3** admin panel with dark mode
 - **SQLite** for development, MySQL/PostgreSQL for production
 - **Pest PHP** testing framework with comprehensive coverage
@@ -44,8 +44,8 @@ A comprehensive customer support system built with Laravel 12 and Filament 3.3, 
 
 ```bash
 # Clone and setup
-git clone <repository-url> tickets
-cd tickets
+git clone https://github.com/markc/tikm
+cd tikm
 
 # Install dependencies
 composer install
@@ -94,7 +94,7 @@ composer dev  # Starts PHP server, queue worker, log viewer, and Vite
 
 ### Running Tests
 ```bash
-composer test              # Full test suite
+composer test             # Full test suite
 php artisan test          # Laravel test runner
 ./vendor/bin/pint         # Code formatting
 ```
@@ -103,13 +103,13 @@ php artisan test          # Laravel test runner
 ```bash
 php artisan migrate --seed           # Reset database with sample data
 php artisan ticket:process-email     # Process email (called by mail server)
-php artisan queue:listen            # Process background jobs
+php artisan queue:listen             # Process background jobs
 ```
 
 ## Architecture
 
 ### Technology Stack
-- **Backend**: Laravel 12, PHP 8.2+
+- **Backend**: Laravel 12, PHP 8.3+
 - **Admin Panel**: Filament 3.3
 - **Frontend**: Blade templates, Tailwind CSS 4.0, Alpine.js
 - **Database**: SQLite (dev), MySQL/PostgreSQL (prod)
@@ -164,4 +164,4 @@ For development questions:
 
 ---
 
-**Built with ❤️ using Laravel and Filament**
+**Built with ❤️ using Laravel , Filament and the magnificent Claude Code**
