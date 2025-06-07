@@ -1,6 +1,6 @@
-# Ticketing System User Guide
+# TIKM User Guide
 
-This guide covers how to use the ticketing system from both customer and administrative perspectives.
+This guide covers how to use TIKM from both customer and administrative perspectives.
 
 ## Access Points
 
@@ -299,4 +299,4 @@ This guide covers how to use the ticketing system from both customer and adminis
 - Review maintenance schedules
 - Follow official communication channels
 
-This comprehensive guide covers all aspects of using the ticketing system effectively. For development and setup instructions, refer to the main CLAUDE.md file and technical documentation in the docs/ directory.
+This comprehensive guide covers all aspects of using TIKM effectively. For development and setup instructions, refer to the main CLAUDE.md file and technical documentation in the docs/ directory.

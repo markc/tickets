@@ -1,6 +1,6 @@
 ### **Prompt for AI Code Generation**
 
-**Project:** Build a Laravel 12 Ticketing System with a Filament 3.3 Admin Panel.
+**Project:** Build a Laravel 12 Customer Support System (TIKM) with a Filament 3.3 Admin Panel.
 
 **Objective:** You are an expert Laravel and Filament developer. Your task is to create a complete ticketing support system inspired by the features of the `lara-zeus/thunder` Filament plugin. The application will have a customer-facing frontend for users to submit and manage their tickets, and a comprehensive Filament-based admin panel for support agents and administrators to manage the system.
 
