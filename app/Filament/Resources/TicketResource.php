@@ -43,8 +43,7 @@ class TicketResource extends Resource
                             ->columnSpanFull(),
                         Forms\Components\Select::make('office_id')
                             ->label('Office')
-                            ->relationship('office', 'name', fn (Builder $query) => 
-                                auth()->user()->role === 'agent' 
+                            ->relationship('office', 'name', fn (Builder $query) => auth()->user()->role === 'agent'
                                     ? $query->whereIn('offices.id', auth()->user()->offices()->pluck('offices.id'))
                                     : $query
                             )
@@ -55,7 +54,7 @@ class TicketResource extends Resource
                             ->label('Priority')
                             ->options(function () {
                                 return \App\Models\TicketPriority::all()
-                                    ->sortBy(fn ($priority) => match($priority->name) {
+                                    ->sortBy(fn ($priority) => match ($priority->name) {
                                         'Low' => 1,
                                         'Medium' => 2,
                                         'High' => 3,
@@ -77,16 +76,16 @@ class TicketResource extends Resource
                             ->label('Assigned To')
                             ->options(function (?Ticket $record, $get) {
                                 $officeId = $get('office_id') ?? ($record?->office_id);
-                                
+
                                 $query = \App\Models\User::where('role', 'agent');
-                                
+
                                 // If office is selected, filter agents by that office
                                 if ($officeId) {
                                     $query->whereHas('offices', function ($q) use ($officeId) {
                                         $q->where('offices.id', $officeId);
                                     });
                                 }
-                                
+
                                 return $query->pluck('name', 'id');
                             })
                             ->searchable()

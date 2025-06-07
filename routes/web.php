@@ -7,14 +7,14 @@ Route::get('/', function () {
     // If user is authenticated, redirect based on role
     if (auth()->check()) {
         $user = auth()->user();
-        
+
         if ($user->isAdmin() || $user->isAgent()) {
             return redirect('/admin');
         } else {
             return redirect('/dashboard');
         }
     }
-    
+
     // If not authenticated, redirect to admin login (Filament's beautiful login page)
     return redirect('/admin/login');
 });

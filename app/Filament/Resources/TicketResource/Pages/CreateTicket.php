@@ -39,15 +39,15 @@ class CreateTicket extends CreateRecord
     protected function sendTicketCreatedNotifications(): void
     {
         $ticket = $this->record;
-        
+
         // Notify the ticket creator (customer perspective)
         $ticket->creator->notify(new TicketCreated($ticket));
-        
+
         // Notify assigned agent if exists
         if ($ticket->assigned_to_id) {
             $ticket->assignedTo->notify(new TicketCreated($ticket));
         }
-        
+
         // Notify all agents in the same office
         $agentsInOffice = User::where('role', 'agent')
             ->whereHas('offices', function ($query) use ($ticket) {
@@ -55,11 +55,11 @@ class CreateTicket extends CreateRecord
             })
             ->where('id', '!=', $ticket->assigned_to_id) // Don't double-notify assigned agent
             ->get();
-            
+
         foreach ($agentsInOffice as $agent) {
             $agent->notify(new TicketCreated($ticket));
         }
-        
+
         // Notify all admins
         $admins = User::where('role', 'admin')->get();
         foreach ($admins as $admin) {

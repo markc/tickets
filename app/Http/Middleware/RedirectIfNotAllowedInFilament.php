@@ -23,12 +23,12 @@ class RedirectIfNotAllowedInFilament
         // If user is authenticated
         if (auth()->check()) {
             $user = auth()->user();
-            
+
             // If customer tries to access admin area, redirect to dashboard
             if ($user->role === 'customer') {
                 return redirect('/dashboard');
             }
-            
+
             // Allow admin and agent access
             if (in_array($user->role, ['admin', 'agent'])) {
                 return $next($request);
