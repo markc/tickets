@@ -12,6 +12,7 @@ Route::get('/', function () {
             return redirect('/dashboard');
         }
     }
+
     return redirect('/admin/login');
 });
 
