@@ -62,12 +62,19 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('role')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -75,13 +82,33 @@ class UserResource extends Resource
                         'agent' => 'warning',
                         'customer' => 'info',
                         default => 'gray',
-                    }),
+                    })
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('offices.name')
                     ->label('Offices')
                     ->badge()
-                    ->separator(','),
-                Tables\Columns\TextColumn::make('created_at')
+                    ->separator(',')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('email_verified_at')
+                    ->label('Email Verified')
                     ->dateTime()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created')
+                    ->dateTime()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Updated')
+                    ->dateTime()
+                    ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -92,16 +119,23 @@ class UserResource extends Resource
                         'agent' => 'Support Agent',
                         'customer' => 'Customer',
                     ]),
+                Tables\Filters\Filter::make('email_verified')
+                    ->query(fn ($query) => $query->whereNotNull('email_verified_at'))
+                    ->label('Email Verified'),
+                Tables\Filters\Filter::make('email_unverified')
+                    ->query(fn ($query) => $query->whereNull('email_verified_at'))
+                    ->label('Email Unverified'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label(''),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('name', 'asc');
+            ->defaultSort('updated_at', 'desc');
     }
 
     public static function getRelations(): array

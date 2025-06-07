@@ -10,6 +10,11 @@ class EditFAQ extends EditRecord
 {
     protected static string $resource = FAQResource::class;
 
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

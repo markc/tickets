@@ -21,6 +21,10 @@ class FAQResource extends Resource
 
     protected static ?int $navigationSort = 5;
 
+    protected static ?string $modelLabel = 'FAQ';
+
+    protected static ?string $pluralModelLabel = 'FAQs';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -59,25 +63,60 @@ class FAQResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('question')
                     ->searchable()
-                    ->limit(50),
+                    ->sortable()
+                    ->limit(32)
+                    ->tooltip(fn ($record) => $record->question)
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('answer')
+                    ->searchable()
+                    ->sortable()
+                    ->limit(32)
+                    ->tooltip(fn ($record) => $record->answer)
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('office.name')
                     ->label('Department')
                     ->badge()
                     ->default('General')
-                    ->sortable(),
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\IconColumn::make('is_published')
                     ->label('Published')
-                    ->boolean(),
+                    ->boolean()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
+                    ->alignment('center'),
 
                 Tables\Columns\TextColumn::make('sort_order')
-                    ->sortable(),
+                    ->label('Order')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
+                    ->alignment('center'),
 
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created')
                     ->dateTime()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Updated')
+                    ->dateTime()
+                    ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -89,17 +128,27 @@ class FAQResource extends Resource
 
                 Tables\Filters\TernaryFilter::make('is_published')
                     ->label('Published'),
+
+                Tables\Filters\Filter::make('general_faqs')
+                    ->query(fn ($query) => $query->whereNull('office_id'))
+                    ->label('General FAQs'),
+
+                Tables\Filters\Filter::make('department_faqs')
+                    ->query(fn ($query) => $query->whereNotNull('office_id'))
+                    ->label('Department FAQs'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label(''),
+                Tables\Actions\DeleteAction::make()
+                    ->label(''),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('sort_order', 'asc');
+            ->defaultSort('updated_at', 'desc');
     }
 
     public static function getPages(): array
