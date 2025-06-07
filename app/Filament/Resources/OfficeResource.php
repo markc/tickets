@@ -18,6 +18,11 @@ class OfficeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form

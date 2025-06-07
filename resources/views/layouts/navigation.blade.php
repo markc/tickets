@@ -21,7 +21,7 @@
                     <x-nav-link :href="route('faq.index')" :active="request()->routeIs('faq.*')">
                         {{ __('FAQ') }}
                     </x-nav-link>
-                    @if(auth()->user()->isAdmin() || auth()->user()->isAgent())
+                    @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isAgent()))
                         <x-nav-link :href="url('/admin')" :active="request()->is('admin*')">
                             {{ __('Admin Panel') }}
                         </x-nav-link>
@@ -87,7 +87,7 @@
             <x-responsive-nav-link :href="route('faq.index')" :active="request()->routeIs('faq.*')">
                 {{ __('FAQ') }}
             </x-responsive-nav-link>
-            @if(auth()->user()->isAdmin() || auth()->user()->isAgent())
+            @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isAgent()))
                 <x-responsive-nav-link :href="url('/admin')" :active="request()->is('admin*')">
                     {{ __('Admin Panel') }}
                 </x-responsive-nav-link>

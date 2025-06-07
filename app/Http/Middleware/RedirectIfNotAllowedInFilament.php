@@ -15,10 +15,27 @@ class RedirectIfNotAllowedInFilament
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! auth()->check() || ! in_array(auth()->user()->role, ['admin', 'agent'])) {
-            abort(403, 'Unauthorized access to admin panel.');
+        // Allow access to login page for all users
+        if ($request->is('admin/login')) {
+            return $next($request);
         }
 
-        return $next($request);
+        // If user is authenticated
+        if (auth()->check()) {
+            $user = auth()->user();
+            
+            // If customer tries to access admin area, redirect to dashboard
+            if ($user->role === 'customer') {
+                return redirect('/dashboard');
+            }
+            
+            // Allow admin and agent access
+            if (in_array($user->role, ['admin', 'agent'])) {
+                return $next($request);
+            }
+        }
+
+        // If not authenticated or unauthorized role, block access
+        abort(403, 'Unauthorized access to admin panel.');
     }
 }

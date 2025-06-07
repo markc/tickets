@@ -19,6 +19,11 @@ class TicketResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->isAdmin() || auth()->user()?->isAgent() ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -38,15 +43,30 @@ class TicketResource extends Resource
                             ->columnSpanFull(),
                         Forms\Components\Select::make('office_id')
                             ->label('Office')
-                            ->relationship('office', 'name')
+                            ->relationship('office', 'name', fn (Builder $query) => 
+                                auth()->user()->role === 'agent' 
+                                    ? $query->whereIn('offices.id', auth()->user()->offices()->pluck('offices.id'))
+                                    : $query
+                            )
                             ->required()
                             ->preload()
                             ->searchable(),
                         Forms\Components\Select::make('ticket_priority_id')
                             ->label('Priority')
-                            ->relationship('priority', 'name')
+                            ->options(function () {
+                                return \App\Models\TicketPriority::all()
+                                    ->sortBy(fn ($priority) => match($priority->name) {
+                                        'Low' => 1,
+                                        'Medium' => 2,
+                                        'High' => 3,
+                                        'Urgent' => 4,
+                                        default => 5
+                                    })
+                                    ->pluck('name', 'id');
+                            })
                             ->required()
-                            ->preload(),
+                            ->preload()
+                            ->default(fn () => \App\Models\TicketPriority::where('name', 'Low')->first()?->id),
                         Forms\Components\Select::make('ticket_status_id')
                             ->label('Status')
                             ->relationship('status', 'name')
@@ -55,15 +75,25 @@ class TicketResource extends Resource
                             ->default(fn () => TicketStatus::where('name', 'Open')->first()?->id),
                         Forms\Components\Select::make('assigned_to_id')
                             ->label('Assigned To')
-                            ->relationship('assignedTo', 'name', fn (Builder $query, ?Ticket $record) => $query->whereHas('offices', function ($q) use ($record) {
-                                if ($record && $record->office_id) {
-                                    $q->where('offices.id', $record->office_id);
+                            ->options(function (?Ticket $record, $get) {
+                                $officeId = $get('office_id') ?? ($record?->office_id);
+                                
+                                $query = \App\Models\User::where('role', 'agent');
+                                
+                                // If office is selected, filter agents by that office
+                                if ($officeId) {
+                                    $query->whereHas('offices', function ($q) use ($officeId) {
+                                        $q->where('offices.id', $officeId);
+                                    });
                                 }
-                            })->where('role', 'agent')
-                            )
+                                
+                                return $query->pluck('name', 'id');
+                            })
                             ->searchable()
                             ->preload()
-                            ->nullable(),
+                            ->nullable()
+                            ->reactive()
+                            ->default(fn () => auth()->user()->isAgent() ? auth()->user()->id : null),
                     ])
                     ->columns(2),
             ]);
@@ -76,25 +106,38 @@ class TicketResource extends Resource
                 Tables\Columns\TextColumn::make('uuid')
                     ->label('ID')
                     ->searchable()
+                    ->sortable()
                     ->copyable()
-                    ->sortable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('subject')
                     ->searchable()
-                    ->limit(50),
+                    ->sortable()
+                    ->limit(24)
+                    ->tooltip(fn ($record) => $record->subject)
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('office.name')
+                    ->label('Office')
                     ->badge()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('creator.name')
                     ->label('Created By')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('assignedTo.name')
                     ->label('Assigned To')
                     ->sortable()
                     ->searchable()
-                    ->placeholder('Unassigned'),
+                    ->placeholder('Unassigned')
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('priority.name')
+                    ->label('Priority')
                     ->badge()
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable()
                     ->color(fn (string $state): string => match ($state) {
                         'Low' => 'gray',
                         'Medium' => 'info',
@@ -103,7 +146,11 @@ class TicketResource extends Resource
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('status.name')
+                    ->label('Status')
                     ->badge()
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable()
                     ->color(fn (string $state): string => match ($state) {
                         'Open' => 'info',
                         'In Progress' => 'warning',
@@ -111,28 +158,73 @@ class TicketResource extends Resource
                         'Closed' => 'success',
                         default => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('updated_at')
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created')
                     ->dateTime()
                     ->sortable()
-                    ->since(),
+                    ->searchable()
+                    ->since()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Updated')
+                    ->dateTime()
+                    ->sortable()
+                    ->searchable()
+                    ->since()
+                    ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('ticket_status_id')
                     ->label('Status')
-                    ->relationship('status', 'name'),
+                    ->relationship('status', 'name')
+                    ->multiple()
+                    ->preload(),
                 Tables\Filters\SelectFilter::make('ticket_priority_id')
                     ->label('Priority')
-                    ->relationship('priority', 'name'),
+                    ->relationship('priority', 'name')
+                    ->multiple()
+                    ->preload(),
                 Tables\Filters\SelectFilter::make('office_id')
                     ->label('Office')
-                    ->relationship('office', 'name'),
+                    ->relationship('office', 'name')
+                    ->multiple()
+                    ->preload(),
                 Tables\Filters\SelectFilter::make('assigned_to_id')
                     ->label('Assigned To')
-                    ->relationship('assignedTo', 'name'),
+                    ->relationship('assignedTo', 'name')
+                    ->multiple()
+                    ->searchable()
+                    ->preload(),
+                Tables\Filters\SelectFilter::make('creator_id')
+                    ->label('Created By')
+                    ->relationship('creator', 'name')
+                    ->multiple()
+                    ->searchable()
+                    ->preload(),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')
+                            ->label('Created from'),
+                        Forms\Components\DatePicker::make('created_until')
+                            ->label('Created until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label(''),
+                Tables\Actions\EditAction::make()
+                    ->label(''),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -167,7 +259,7 @@ class TicketResource extends Resource
                         }),
                 ]),
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort('updated_at', 'desc');
     }
 
     public static function getRelations(): array

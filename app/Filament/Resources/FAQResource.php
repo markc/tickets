@@ -21,6 +21,11 @@ class FAQResource extends Resource
 
     protected static ?int $navigationSort = 5;
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->isAdmin() || auth()->user()?->isAgent() ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form

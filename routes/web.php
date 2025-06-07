@@ -4,15 +4,26 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    // If user is authenticated, redirect based on role
+    if (auth()->check()) {
+        $user = auth()->user();
+        
+        if ($user->isAdmin() || $user->isAgent()) {
+            return redirect('/admin');
+        } else {
+            return redirect('/dashboard');
+        }
+    }
+    
+    // If not authenticated, redirect to admin login (Filament's beautiful login page)
+    return redirect('/admin/login');
 });
 
 Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/faq', [\App\Http\Controllers\FAQController::class, 'index'])->name('faq.index');
-
 Route::middleware('auth')->group(function () {
+    Route::get('/faq', [\App\Http\Controllers\FAQController::class, 'index'])->name('faq.index');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

@@ -27,7 +27,9 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('TIKM Support Portal')
             ->login()
+            ->sidebarCollapsibleOnDesktop()
             ->darkMode(true)->colors([
                 'primary' => Color::Amber,
             ])
@@ -38,8 +40,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                \App\Filament\Widgets\TicketStatsWidget::class,
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                \App\Filament\Widgets\DateTimeLocationWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
