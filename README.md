@@ -82,6 +82,7 @@ Visit http://127.0.0.1:8000 to access the application.
 
 ### 🚀 Deployment
 - **[Deployment Guide](docs/DEPLOYMENT_GUIDE.md)** - Production deployment instructions
+- **[GitHub Webhook Setup](docs/GITHUB_WEBHOOK_SETUP.md)** - Automated deployment configuration
 - **[Email Server Setup](docs/EMAIL_SERVER_SETUP.md)** - Mail server configuration for email-to-ticket
 
 ## Development
