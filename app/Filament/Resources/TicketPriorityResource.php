@@ -18,6 +18,10 @@ class TicketPriorityResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
+    protected static ?string $modelLabel = 'Ticket Priority';
+
+    protected static ?string $pluralModelLabel = 'Ticket Priorities';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -34,26 +38,57 @@ class TicketPriorityResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\ColorColumn::make('color'),
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\ColorColumn::make('color')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('tickets_count')
                     ->label('Tickets')
                     ->counts('tickets')
-                    ->badge(),
+                    ->badge()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created')
+                    ->dateTime()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Updated')
+                    ->dateTime()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('has_tickets')
+                    ->query(fn ($query) => $query->has('tickets'))
+                    ->label('Has Tickets'),
+                Tables\Filters\Filter::make('no_tickets')
+                    ->query(fn ($query) => $query->doesntHave('tickets'))
+                    ->label('No Tickets'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label(''),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('updated_at', 'desc');
     }
 
     public static function getRelations(): array

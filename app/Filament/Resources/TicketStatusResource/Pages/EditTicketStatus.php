@@ -10,6 +10,11 @@ class EditTicketStatus extends EditRecord
 {
     protected static string $resource = TicketStatusResource::class;
 
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

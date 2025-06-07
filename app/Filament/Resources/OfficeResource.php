@@ -54,42 +54,80 @@ class OfficeResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('description')
                     ->limit(50)
-                    ->wrap(),
+                    ->tooltip(fn ($record) => $record->description)
+                    ->wrap()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\IconColumn::make('is_internal')
                     ->boolean()
-                    ->label('Internal'),
+                    ->label('Internal')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('users_count')
                     ->label('Agents')
                     ->counts('users')
-                    ->badge(),
+                    ->badge()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('tickets_count')
                     ->label('Tickets')
                     ->counts('tickets')
-                    ->badge(),
+                    ->badge()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created')
                     ->dateTime()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Updated')
+                    ->dateTime()
+                    ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_internal')
                     ->label('Internal Office'),
+                Tables\Filters\Filter::make('has_agents')
+                    ->query(fn ($query) => $query->has('users'))
+                    ->label('Has Agents'),
+                Tables\Filters\Filter::make('no_agents')
+                    ->query(fn ($query) => $query->doesntHave('users'))
+                    ->label('No Agents'),
+                Tables\Filters\Filter::make('has_tickets')
+                    ->query(fn ($query) => $query->has('tickets'))
+                    ->label('Has Tickets'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label(''),
+                Tables\Actions\ViewAction::make()
+                    ->label(''),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('name', 'asc');
+            ->defaultSort('updated_at', 'desc');
     }
 
     public static function getRelations(): array

@@ -47,6 +47,8 @@ class ViewTicket extends ViewRecord
                         ->title('Status updated')
                         ->success()
                         ->send();
+
+                    $this->redirect($this->getResource()::getUrl('index'));
                 }),
 
             Actions\Action::make('changePriority')
@@ -74,6 +76,8 @@ class ViewTicket extends ViewRecord
                         ->title('Priority updated')
                         ->success()
                         ->send();
+
+                    $this->redirect($this->getResource()::getUrl('index'));
                 }),
 
             Actions\Action::make('assignTicket')
@@ -105,9 +109,12 @@ class ViewTicket extends ViewRecord
                         ->title('Ticket assigned')
                         ->success()
                         ->send();
+
+                    $this->redirect($this->getResource()::getUrl('index'));
                 }),
 
-            Actions\EditAction::make(),
+            Actions\EditAction::make()
+                ->successRedirectUrl($this->getResource()::getUrl('index')),
         ];
     }
 
