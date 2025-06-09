@@ -276,6 +276,125 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Knowledge Base Integration -->
+                        <div class="mb-6 p-4 bg-green-50 rounded-lg" id="knowledge-base-section">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <h4 class="text-sm font-semibold text-green-900">Knowledge Base</h4>
+                                    <span class="ml-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded">FAQ Suggestions</span>
+                                </div>
+                                <button type="button" 
+                                        onclick="toggleKnowledgeBase()" 
+                                        class="text-xs text-green-600 hover:text-green-800 font-medium">
+                                    <span id="kb-toggle-text">Show FAQs</span>
+                                </button>
+                            </div>
+                            
+                            <div id="knowledge-base-interface" class="hidden space-y-3">
+                                <!-- Tab Navigation -->
+                                <div class="flex border-b border-green-200">
+                                    <button type="button" 
+                                            onclick="switchKBTab('suggestions')" 
+                                            class="kb-tab px-3 py-2 text-sm font-medium text-green-700 border-b-2 border-green-500" 
+                                            data-tab="suggestions">
+                                        Suggestions
+                                    </button>
+                                    <button type="button" 
+                                            onclick="switchKBTab('search')" 
+                                            class="kb-tab px-3 py-2 text-sm font-medium text-green-600 hover:text-green-700 border-b-2 border-transparent" 
+                                            data-tab="search">
+                                        Search FAQs
+                                    </button>
+                                    <button type="button" 
+                                            onclick="switchKBTab('trending')" 
+                                            class="kb-tab px-3 py-2 text-sm font-medium text-green-600 hover:text-green-700 border-b-2 border-transparent" 
+                                            data-tab="trending">
+                                        Trending
+                                    </button>
+                                </div>
+
+                                <!-- Suggestions Tab -->
+                                <div id="kb-suggestions-tab" class="kb-tab-content">
+                                    <div class="mb-3">
+                                        <p class="text-xs text-green-700">
+                                            📝 Based on this ticket's content, here are relevant FAQ articles:
+                                        </p>
+                                    </div>
+                                    <div id="faq-suggestions-list" class="max-h-48 overflow-y-auto space-y-2">
+                                        <div class="text-sm text-gray-500 text-center py-4">
+                                            <div class="animate-pulse">Loading suggestions...</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Search Tab -->
+                                <div id="kb-search-tab" class="kb-tab-content hidden">
+                                    <div class="flex gap-3 mb-3">
+                                        <input type="text" 
+                                               id="faq-search" 
+                                               placeholder="Search knowledge base..." 
+                                               class="flex-1 text-sm border-gray-300 rounded-md focus:border-green-500 focus:ring-green-500">
+                                        <button type="button" 
+                                                onclick="searchFAQs()" 
+                                                class="px-3 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700">
+                                            Search
+                                        </button>
+                                    </div>
+                                    <div id="faq-search-results" class="max-h-48 overflow-y-auto space-y-2">
+                                        <p class="text-sm text-gray-500 text-center py-4">Enter a search term to find relevant FAQs</p>
+                                    </div>
+                                </div>
+
+                                <!-- Trending Tab -->
+                                <div id="kb-trending-tab" class="kb-tab-content hidden">
+                                    <div class="mb-3">
+                                        <p class="text-xs text-green-700">
+                                            🔥 Most used FAQs in your department:
+                                        </p>
+                                    </div>
+                                    <div id="faq-trending-list" class="max-h-48 overflow-y-auto space-y-2">
+                                        <div class="text-sm text-gray-500 text-center py-4">
+                                            <div class="animate-pulse">Loading trending FAQs...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- FAQ Preview -->
+                                <div id="faq-preview" class="hidden p-3 bg-white border rounded-md">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h5 class="text-sm font-medium text-gray-900" id="faq-preview-question"></h5>
+                                        <div class="flex gap-1 ml-2">
+                                            <button type="button" 
+                                                    onclick="insertFAQ('markdown')" 
+                                                    class="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700"
+                                                    title="Insert as Markdown">
+                                                📝
+                                            </button>
+                                            <button type="button" 
+                                                    onclick="insertFAQ('plain')" 
+                                                    class="px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-700"
+                                                    title="Insert as Plain Text">
+                                                📄
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="faq-preview-content" class="text-sm text-gray-700 mb-3 max-h-32 overflow-y-auto"></div>
+                                    <div class="flex gap-2">
+                                        <button type="button" 
+                                                onclick="insertFAQ('markdown')" 
+                                                class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">
+                                            Insert FAQ
+                                        </button>
+                                        <button type="button" 
+                                                onclick="hideFAQPreview()" 
+                                                class="px-3 py-1 bg-gray-300 text-gray-700 text-xs rounded hover:bg-gray-400">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     @endif
 
                     <form method="POST" action="{{ route('tickets.reply', $ticket->uuid) }}" enctype="multipart/form-data">
@@ -350,6 +469,12 @@
             let cannedResponses = [];
             let selectedResponse = null;
             let cannedResponsesVisible = false;
+
+            // Knowledge Base variables
+            let faqSuggestions = [];
+            let selectedFAQ = null;
+            let knowledgeBaseVisible = false;
+            let currentKBTab = 'suggestions';
 
             async function toggleCannedResponses() {
                 const interface_ = document.getElementById('canned-responses-interface');
@@ -496,6 +621,212 @@
                 document.getElementById('response-preview').classList.add('hidden');
                 selectedResponse = null;
             }
+
+            // Knowledge Base Functions
+            async function toggleKnowledgeBase() {
+                const interface_ = document.getElementById('knowledge-base-interface');
+                const toggleText = document.getElementById('kb-toggle-text');
+                
+                if (knowledgeBaseVisible) {
+                    interface_.classList.add('hidden');
+                    toggleText.textContent = 'Show FAQs';
+                    knowledgeBaseVisible = false;
+                } else {
+                    if (currentKBTab === 'suggestions' && faqSuggestions.length === 0) {
+                        await loadFAQSuggestions();
+                    } else if (currentKBTab === 'trending') {
+                        await loadTrendingFAQs();
+                    }
+                    interface_.classList.remove('hidden');
+                    toggleText.textContent = 'Hide FAQs';
+                    knowledgeBaseVisible = true;
+                }
+            }
+
+            function switchKBTab(tabName) {
+                // Update tab buttons
+                document.querySelectorAll('.kb-tab').forEach(tab => {
+                    tab.classList.remove('text-green-700', 'border-green-500');
+                    tab.classList.add('text-green-600', 'border-transparent');
+                });
+                
+                const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
+                activeTab.classList.remove('text-green-600', 'border-transparent');
+                activeTab.classList.add('text-green-700', 'border-green-500');
+                
+                // Update tab content
+                document.querySelectorAll('.kb-tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(`kb-${tabName}-tab`).classList.remove('hidden');
+                
+                currentKBTab = tabName;
+                
+                // Load content if needed
+                if (tabName === 'suggestions' && faqSuggestions.length === 0) {
+                    loadFAQSuggestions();
+                } else if (tabName === 'trending') {
+                    loadTrendingFAQs();
+                }
+            }
+
+            async function loadFAQSuggestions() {
+                try {
+                    const response = await fetch(`{{ route('api.knowledge-base.suggestions', $ticket) }}`);
+                    const data = await response.json();
+                    
+                    faqSuggestions = data.data;
+                    displayFAQList(faqSuggestions, 'faq-suggestions-list');
+                } catch (error) {
+                    console.error('Error loading FAQ suggestions:', error);
+                    document.getElementById('faq-suggestions-list').innerHTML = 
+                        '<p class="text-sm text-red-500 text-center py-4">Error loading suggestions</p>';
+                }
+            }
+
+            async function loadTrendingFAQs() {
+                try {
+                    const response = await fetch('{{ route("api.knowledge-base.trending") }}');
+                    const data = await response.json();
+                    
+                    displayFAQList(data.data, 'faq-trending-list');
+                } catch (error) {
+                    console.error('Error loading trending FAQs:', error);
+                    document.getElementById('faq-trending-list').innerHTML = 
+                        '<p class="text-sm text-red-500 text-center py-4">Error loading trending FAQs</p>';
+                }
+            }
+
+            async function searchFAQs() {
+                const searchInput = document.getElementById('faq-search');
+                const query = searchInput.value.trim();
+                
+                if (!query) {
+                    document.getElementById('faq-search-results').innerHTML = 
+                        '<p class="text-sm text-gray-500 text-center py-4">Enter a search term to find relevant FAQs</p>';
+                    return;
+                }
+                
+                document.getElementById('faq-search-results').innerHTML = 
+                    '<div class="text-sm text-gray-500 text-center py-4"><div class="animate-pulse">Searching...</div></div>';
+                
+                try {
+                    const response = await fetch(`{{ route('api.knowledge-base.search') }}?q=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+                    
+                    displayFAQList(data.data, 'faq-search-results');
+                } catch (error) {
+                    console.error('Error searching FAQs:', error);
+                    document.getElementById('faq-search-results').innerHTML = 
+                        '<p class="text-sm text-red-500 text-center py-4">Error searching FAQs</p>';
+                }
+            }
+
+            function displayFAQList(faqs, containerId) {
+                const container = document.getElementById(containerId);
+                
+                if (faqs.length === 0) {
+                    container.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">No FAQs found</p>';
+                    return;
+                }
+                
+                container.innerHTML = faqs.map(faq => `
+                    <div class="faq-item p-3 bg-white border rounded cursor-pointer hover:bg-green-50 transition-colors"
+                         data-faq-id="${faq.id}">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <h6 class="text-sm font-medium text-gray-900">${faq.question}</h6>
+                                <p class="text-xs text-gray-500 mt-1 line-clamp-2">${faq.excerpt}</p>
+                            </div>
+                            <div class="flex flex-col items-end ml-3">
+                                ${faq.office ? `<span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">${faq.office}</span>` : ''}
+                                ${faq.usage_count ? `<span class="text-xs text-gray-400 mt-1">Used ${faq.usage_count} times</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Add click listeners
+                container.querySelectorAll('.faq-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const faqId = item.dataset.faqId;
+                        previewFAQ(faqId, faqs);
+                    });
+                });
+            }
+
+            function previewFAQ(faqId, faqList) {
+                const faq = faqList.find(f => f.id == faqId);
+                if (!faq) return;
+                
+                selectedFAQ = faq;
+                
+                document.getElementById('faq-preview-question').textContent = faq.question;
+                document.getElementById('faq-preview-content').innerHTML = faq.answer;
+                document.getElementById('faq-preview').classList.remove('hidden');
+            }
+
+            async function insertFAQ(format = 'markdown') {
+                if (!selectedFAQ) return;
+                
+                try {
+                    const response = await fetch(`{{ url('api/knowledge-base/faqs') }}/${selectedFAQ.id}/format`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        body: JSON.stringify({
+                            format: format,
+                            ticket_id: '{{ $ticket->uuid }}'
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    // Insert formatted content into message textarea
+                    const messageTextarea = document.getElementById('message');
+                    const currentContent = messageTextarea.value;
+                    const newContent = currentContent ? currentContent + '\n\n' + data.data.formatted_content : data.data.formatted_content;
+                    messageTextarea.value = newContent;
+                    
+                    // Track usage
+                    await fetch(`{{ url('api/knowledge-base/faqs') }}/${selectedFAQ.id}/track-usage`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        body: JSON.stringify({
+                            ticket_id: '{{ $ticket->uuid }}',
+                            context: 'reply_insertion'
+                        })
+                    });
+                    
+                    hideFAQPreview();
+                    toggleKnowledgeBase(); // Hide the interface
+                } catch (error) {
+                    console.error('Error inserting FAQ:', error);
+                }
+            }
+
+            function hideFAQPreview() {
+                document.getElementById('faq-preview').classList.add('hidden');
+                selectedFAQ = null;
+            }
+
+            // Add Enter key support for FAQ search
+            document.addEventListener('DOMContentLoaded', function() {
+                const faqSearchInput = document.getElementById('faq-search');
+                if (faqSearchInput) {
+                    faqSearchInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            searchFAQs();
+                        }
+                    });
+                }
+            });
         </script>
     @endif
 </x-app-layout>

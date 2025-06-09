@@ -58,6 +58,11 @@ class User extends Authenticatable
         return $this->hasMany(Ticket::class, 'assigned_to_id');
     }
 
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'creator_id');
+    }
+
     public function offices()
     {
         return $this->belongsToMany(Office::class)->withTimestamps();
