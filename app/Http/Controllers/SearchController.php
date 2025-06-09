@@ -65,16 +65,9 @@ class SearchController extends Controller
 
     private function searchTickets(string $query, array $filters, string $sortBy, string $sortOrder)
     {
-        // Start with Scout search if query is provided
+        // Use manual search for better relationship support
         if (! empty(trim($query))) {
-            try {
-                $ticketQuery = Ticket::search($query)->query(function ($builder) use ($filters, $sortBy, $sortOrder) {
-                    return $this->applyTicketFilters($builder, $filters, $sortBy, $sortOrder);
-                });
-            } catch (\Exception $e) {
-                // Fallback to regular query if Scout fails
-                $ticketQuery = $this->applyTicketFilters(Ticket::query(), $filters, $sortBy, $sortOrder);
-            }
+            $ticketQuery = $this->manualSearch($query, $filters, $sortBy, $sortOrder);
         } else {
             // If no search query, use regular query builder with filters
             $ticketQuery = $this->applyTicketFilters(Ticket::query(), $filters, $sortBy, $sortOrder);
@@ -121,6 +114,36 @@ class SearchController extends Controller
             : $ticketQuery->paginate(15);
     }
 
+    private function manualSearch(string $query, array $filters, string $sortBy, string $sortOrder)
+    {
+        $searchTerm = '%' . $query . '%';
+        
+        $ticketQuery = Ticket::query()
+            ->where(function ($q) use ($searchTerm) {
+                $q->where('subject', 'like', $searchTerm)
+                  ->orWhere('content', 'like', $searchTerm)
+                  ->orWhere('uuid', 'like', $searchTerm)
+                  ->orWhereHas('creator', function ($q) use ($searchTerm) {
+                      $q->where('name', 'like', $searchTerm)
+                        ->orWhere('email', 'like', $searchTerm);
+                  })
+                  ->orWhereHas('assignedTo', function ($q) use ($searchTerm) {
+                      $q->where('name', 'like', $searchTerm);
+                  })
+                  ->orWhereHas('office', function ($q) use ($searchTerm) {
+                      $q->where('name', 'like', $searchTerm);
+                  })
+                  ->orWhereHas('status', function ($q) use ($searchTerm) {
+                      $q->where('name', 'like', $searchTerm);
+                  })
+                  ->orWhereHas('priority', function ($q) use ($searchTerm) {
+                      $q->where('name', 'like', $searchTerm);
+                  });
+            });
+
+        return $this->applyTicketFilters($ticketQuery, $filters, $sortBy, $sortOrder);
+    }
+
     private function applyTicketFilters($query, array $filters, string $sortBy, string $sortOrder)
     {
         // Status filter
@@ -165,14 +188,18 @@ class SearchController extends Controller
 
     private function searchFaqs(string $query, array $filters)
     {
-        $faqQuery = FAQ::search($query)
-            ->where('is_published', true);
+        $searchTerm = '%' . $query . '%';
+        
+        $faqQuery = FAQ::query()
+            ->where('is_published', true)
+            ->where(function ($q) use ($searchTerm) {
+                $q->where('question', 'like', $searchTerm)
+                  ->orWhere('answer', 'like', $searchTerm);
+            });
 
         // Office/category filter for FAQs
         if (! empty($filters['office'])) {
-            $faqQuery = $faqQuery->query(function ($builder) use ($filters) {
-                $builder->whereIn('office_id', $filters['office']);
-            });
+            $faqQuery->whereIn('office_id', $filters['office']);
         }
 
         return $faqQuery->with('office')->paginate(10);
@@ -192,7 +219,7 @@ class SearchController extends Controller
         if ($user->isAdmin()) {
             $offices = \App\Models\Office::orderBy('name')->get(['id', 'name']);
         } elseif ($user->isAgent()) {
-            $offices = $user->offices()->orderBy('name')->get(['id', 'name']);
+            $offices = $user->offices()->orderBy('name')->get(['offices.id', 'name']);
         } else {
             $offices = \App\Models\Office::whereHas('tickets', function ($q) use ($user) {
                 $q->where('creator_id', $user->id);

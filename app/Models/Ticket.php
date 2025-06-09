@@ -270,12 +270,6 @@ class Ticket extends Model
             'uuid' => $this->uuid,
             'subject' => $this->subject,
             'content' => strip_tags($this->content),
-            'creator_name' => $this->creator?->name,
-            'creator_email' => $this->creator?->email,
-            'assigned_to_name' => $this->assignedTo?->name,
-            'office_name' => $this->office?->name,
-            'status_name' => $this->status?->name,
-            'priority_name' => $this->priority?->name,
             'created_at' => $this->created_at,
         ];
     }
