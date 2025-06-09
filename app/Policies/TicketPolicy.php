@@ -45,7 +45,7 @@ class TicketPolicy
     public function update(User $user, Ticket $ticket): bool
     {
         if ($user->isCustomer()) {
-            return false;
+            return $ticket->creator_id === $user->id;
         }
 
         if ($user->isAgent()) {
