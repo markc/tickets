@@ -22,6 +22,9 @@
                         {{ __('FAQ') }}
                     </x-nav-link>
                     @if(auth()->user()->isAdmin() || auth()->user()->isAgent())
+                        <x-nav-link :href="route('analytics.dashboard')" :active="request()->routeIs('analytics.*')">
+                            {{ __('Analytics') }}
+                        </x-nav-link>
                         <x-nav-link :href="url('/admin')" :active="request()->is('admin*')">
                             {{ __('Admin Panel') }}
                         </x-nav-link>
@@ -29,12 +32,25 @@
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <!-- Search and Settings -->
+            <div class="hidden sm:flex sm:items-center sm:ms-6 gap-4">
+                <!-- Search Form -->
+                <form method="GET" action="{{ route('search') }}" class="flex items-center">
+                    <input type="text" name="q" placeholder="Search..." 
+                        class="rounded-md border-gray-300 text-sm py-1 px-3 focus:border-indigo-500 focus:ring-indigo-500"
+                        value="{{ request('q') }}">
+                    <button type="submit" class="ml-2 text-gray-500 hover:text-gray-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </button>
+                </form>
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                            <x-user-avatar :user="Auth::user()" size="sm" class="mr-2" />
                             <div>{{ Auth::user()->name }}</div>
+                            <div class="text-xs text-gray-400 ml-1">({{ ucfirst(Auth::user()->role) }})</div>
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -88,6 +104,9 @@
                 {{ __('FAQ') }}
             </x-responsive-nav-link>
             @if(auth()->user()->isAdmin() || auth()->user()->isAgent())
+                <x-responsive-nav-link :href="route('analytics.dashboard')" :active="request()->routeIs('analytics.*')">
+                    {{ __('Analytics') }}
+                </x-responsive-nav-link>
                 <x-responsive-nav-link :href="url('/admin')" :active="request()->is('admin*')">
                     {{ __('Admin Panel') }}
                 </x-responsive-nav-link>

@@ -41,6 +41,9 @@
                                             Priority
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Assigned To
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Created
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -71,6 +74,16 @@
                                                       style="background-color: {{ $ticket->priority->color }}20; color: {{ $ticket->priority->color }};">
                                                     {{ $ticket->priority->name }}
                                                 </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                @if($ticket->assignedTo)
+                                                    <div class="flex items-center">
+                                                        <x-user-avatar :user="$ticket->assignedTo" size="xs" class="mr-2" />
+                                                        <span class="text-sm">{{ $ticket->assignedTo->name }}</span>
+                                                    </div>
+                                                @else
+                                                    <span class="text-sm text-gray-500">Unassigned</span>
+                                                @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                 {{ $ticket->created_at->format('M j, Y') }}

@@ -236,7 +236,8 @@ class TicketResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
+        $query = parent::getEloquentQuery()
+            ->with(['status', 'priority', 'office', 'creator', 'assignedTo']);
 
         if (auth()->user()->role === 'agent') {
             $officeIds = auth()->user()->offices()->pluck('offices.id');
