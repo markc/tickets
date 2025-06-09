@@ -76,6 +76,7 @@ This documentation is organized as a comprehensive guide, taking you from initia
 - [🔧 API_REFERENCE.md](API_REFERENCE.md) - Complete technical documentation
 - [🌐 REST_API.md](REST_API.md) - REST API documentation and integration guide
 - [⚡ ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Advanced features guide and usage
+- [🔄 WEBSOCKET_IMPLEMENTATION.md](WEBSOCKET_IMPLEMENTATION.md) - Real-time WebSocket updates documentation
 - [📋 TICKETING_SYSTEM.md](TICKETING_SYSTEM.md) - Original system requirements
 - [Database Schema](#database-schema)
 - [Service Architecture](#service-architecture)
@@ -133,8 +134,8 @@ TIKM is a modern customer support ticketing system designed to streamline commun
 
 #### **Technical Excellence**
 - 📧 **Email-to-Ticket** - Full email integration with threading
-- 🔄 **Real-time Updates** - Live notifications and status changes
-- 🔌 **API-First Design** - RESTful API for integrations
+- 🔄 **Real-time Updates** - Live WebSocket notifications with Laravel Reverb
+- 🔌 **API-First Design** - RESTful API for integrations and mobile apps
 - 🛡️ **Security-Focused** - CSRF protection, XSS prevention, secure file handling
 - 📱 **Responsive Design** - Works seamlessly across all devices
 
@@ -151,7 +152,8 @@ TIKM is a modern customer support ticketing system designed to streamline commun
 | **Authentication** | Laravel Breeze + Sanctum | Web + API authentication |
 | **Database** | SQLite/MySQL/PostgreSQL | Data persistence |
 | **Frontend** | Vite + Tailwind CSS | Modern build tools and styling |
-| **Testing** | Pest PHP | Comprehensive testing framework |
+| **Real-time** | Laravel Reverb + Echo | WebSocket server and client |
+| **Testing** | Pest PHP + Panther | Comprehensive testing framework |
 | **Email** | Laravel Mail + Queues | Notification system |
 
 ### **Core Concepts**
@@ -378,9 +380,10 @@ Ready to dive deeper? Choose your path:
 ### **🛠️ Developers**
 1. **Technical Deep Dive**: [API_REFERENCE.md](API_REFERENCE.md) - Complete technical documentation
 2. **REST API Integration**: [REST_API.md](REST_API.md) - API endpoints and mobile integration guide
-3. **Advanced Features**: [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Search, avatars, security, SLA, and more
-4. **System Requirements**: [TICKETING_SYSTEM.md](TICKETING_SYSTEM.md) - Original specifications
-5. **Development Setup**: Follow the [development commands](#development-commands) above
+3. **Real-time Features**: [WEBSOCKET_IMPLEMENTATION.md](WEBSOCKET_IMPLEMENTATION.md) - WebSocket setup and usage
+4. **Advanced Features**: [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Search, avatars, security, SLA, and more
+5. **System Requirements**: [TICKETING_SYSTEM.md](TICKETING_SYSTEM.md) - Original specifications
+6. **Development Setup**: Follow the [development commands](#development-commands) above
 
 ### **🔧 Administrators**
 1. **Admin Guide**: [USER_GUIDE.md](USER_GUIDE.md#admin-guide) - System administration

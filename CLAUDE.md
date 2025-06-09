@@ -65,6 +65,7 @@ php artisan serve         # Start PHP development server only
 npm run dev              # Start Vite dev server with hot reload
 php artisan queue:listen  # Process queued jobs
 php artisan pail         # View logs in real-time
+php artisan reverb:start  # Start WebSocket server for real-time updates
 ```
 
 ### Database Operations
@@ -103,6 +104,20 @@ tail -f /var/log/ticket-email-processing.log
 tail -f storage/logs/laravel.log
 ```
 
+### WebSocket Real-time Development
+```bash
+php artisan reverb:start --port=8080  # Start Laravel Reverb WebSocket server
+php artisan reverb:start --daemon     # Run in background (production)
+
+# Testing WebSocket events manually:
+php artisan tinker
+>>> $ticket = App\Models\Ticket::first();
+>>> event(new App\Events\TicketUpdated($ticket, $ticket->creator, ['test' => 'websocket']));
+
+# Monitor WebSocket connections:
+tail -f storage/logs/reverb.log
+```
+
 ### Production Build
 ```bash
 npm run build            # Build frontend assets
@@ -114,10 +129,11 @@ php artisan optimize     # Cache configs, routes, and views
 ### Technology Stack
 - **Framework**: Laravel 12.x
 - **Admin Panel**: Filament 3.3 at `/admin`
-- **Authentication**: Laravel Breeze
+- **Authentication**: Laravel Breeze + Sanctum (API)
 - **Database**: SQLite (development) / MySQL/PostgreSQL (production)
-- **Testing**: Pest PHP with Laravel plugin
+- **Testing**: Pest PHP with Laravel plugin + Symfony Panther
 - **Frontend**: Vite 6.2 with Tailwind CSS 4.0
+- **Real-time**: Laravel Reverb (WebSocket server) + Laravel Echo (client)
 - **Email Processing**: php-mime-mail-parser
 - **Session/Cache/Queue**: Database drivers
 
@@ -144,6 +160,7 @@ docs/                   # Documentation
 ├── API_REFERENCE.md    # Technical documentation
 ├── DEPLOYMENT_GUIDE.md # Production deployment
 ├── EMAIL_SERVER_SETUP.md # Mail server configuration
+├── WEBSOCKET_IMPLEMENTATION.md # Real-time WebSocket guide
 ├── TICKETING_SYSTEM.md # Original requirements
 └── USER_GUIDE.md       # End-user documentation
 ```
