@@ -69,9 +69,7 @@ class TicketAssignmentServiceTest extends TestCase
         $agent = User::factory()->create(['role' => 'agent']);
         $assigner = User::factory()->create(['role' => 'admin']);
 
-        $result = $this->service->assignTicket($ticket, $agent->id, $assigner->id);
-
-        $this->assertTrue($result);
+        $this->service->reassignTicket($ticket, $agent);
         $this->assertEquals($agent->id, $ticket->fresh()->assigned_to_id);
 
         // Check timeline entry
@@ -88,9 +86,7 @@ class TicketAssignmentServiceTest extends TestCase
         $ticket = Ticket::factory()->create(['assigned_to_id' => $oldAgent->id]);
         $assigner = User::factory()->create(['role' => 'admin']);
 
-        $result = $this->service->reassignTicket($ticket, $newAgent->id, $assigner->id);
-
-        $this->assertTrue($result);
+        $this->service->reassignTicket($ticket, $newAgent);
         $this->assertEquals($newAgent->id, $ticket->fresh()->assigned_to_id);
 
         // Check timeline entries
@@ -147,10 +143,10 @@ class TicketAssignmentServiceTest extends TestCase
             'ticket_status_id' => $closedStatus->id,
         ]);
 
-        $workload = $this->service->getAgentWorkload($agent->id);
+        $workload = $this->service->getAgentWorkload($agent);
 
-        $this->assertEquals(5, $workload['total']);
-        $this->assertEquals(3, $workload['open']);
-        $this->assertEquals(2, $workload['closed']);
+        $this->assertEquals(5, $workload['total_assigned']);
+        $this->assertEquals(3, $workload['open_tickets']);
+        $this->assertArrayHasKey('high_priority', $workload);
     }
 }

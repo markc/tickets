@@ -64,8 +64,7 @@ class TicketAssignmentService
         TicketTimeline::create([
             'ticket_id' => $ticket->id,
             'user_id' => $agent->id,
-            'action' => 'assigned',
-            'description' => "Ticket automatically assigned to {$agent->name}",
+            'entry' => "Ticket automatically assigned to {$agent->name}",
         ]);
     }
 
@@ -82,8 +81,7 @@ class TicketAssignmentService
         TicketTimeline::create([
             'ticket_id' => $ticket->id,
             'user_id' => auth()->id(),
-            'action' => 'reassigned',
-            'description' => $description,
+            'entry' => $description,
         ]);
     }
 
@@ -96,9 +94,26 @@ class TicketAssignmentService
         TicketTimeline::create([
             'ticket_id' => $ticket->id,
             'user_id' => auth()->id(),
-            'action' => 'unassigned',
-            'description' => $oldAgent ? "Ticket unassigned from {$oldAgent->name}" : 'Ticket unassigned',
+            'entry' => $oldAgent ? "Ticket unassigned from {$oldAgent->name}" : 'Ticket unassigned',
         ]);
+    }
+
+    public function getNextAgentForOffice(int $officeId): ?User
+    {
+        $office = \App\Models\Office::find($officeId);
+        if (!$office) {
+            return null;
+        }
+
+        $availableAgents = $office->users()
+            ->where('role', 'agent')
+            ->get();
+
+        if ($availableAgents->isEmpty()) {
+            return null;
+        }
+
+        return $this->selectAgentRoundRobin($officeId, $availableAgents);
     }
 
     public function getAgentWorkload(User $agent): array

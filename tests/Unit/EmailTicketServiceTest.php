@@ -20,7 +20,7 @@ class EmailTicketServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new EmailTicketService;
+        $this->service = new EmailTicketService(new \App\Services\TicketAssignmentService);
 
         // Create necessary data
         $this->seed(\Database\Seeders\TicketStatusSeeder::class);
@@ -41,7 +41,13 @@ class EmailTicketServiceTest extends TestCase
             'attachments' => [],
         ];
 
-        $ticket = $this->service->createTicketFromEmail($emailData);
+        $ticket = $this->service->createTicketFromEmail(
+            $emailData['from'],
+            $emailData['from_name'],
+            $emailData['subject'],
+            $emailData['body'],
+            $emailData['attachments']
+        );
 
         $this->assertInstanceOf(Ticket::class, $ticket);
         $this->assertEquals('Test Email Ticket', $ticket->subject);
@@ -72,7 +78,14 @@ class EmailTicketServiceTest extends TestCase
             'attachments' => [],
         ];
 
-        $reply = $this->service->createReplyFromEmail($ticket, $emailData);
+        $reply = $this->service->createReplyFromEmail(
+            $ticket->uuid,
+            $emailData['from'],
+            $emailData['from_name'],
+            $emailData['subject'],
+            $emailData['body'],
+            $emailData['attachments']
+        );
 
         $this->assertNotNull($reply);
         $this->assertEquals('This is a reply to the ticket', $reply->content);
