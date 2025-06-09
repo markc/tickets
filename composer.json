@@ -79,6 +79,9 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "platform": {
+            "ext-mailparse": "1.0.0"
         }
     },
     "minimum-stability": "stable",
