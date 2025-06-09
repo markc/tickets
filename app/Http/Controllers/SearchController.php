@@ -140,6 +140,7 @@ class SearchController extends Controller
         }
     }
 
+
     private function applyTicketFilters($query, array $filters, string $sortBy, string $sortOrder)
     {
         // Status filter
@@ -243,7 +244,7 @@ class SearchController extends Controller
         if ($user->isAdmin()) {
             $offices = \App\Models\Office::orderBy('name')->get(['id', 'name']);
         } elseif ($user->isAgent()) {
-            $offices = $user->offices()->orderBy('name')->get(['id', 'name']);
+            $offices = $user->offices()->orderBy('name')->get(['offices.id', 'name']);
         } else {
             $offices = \App\Models\Office::whereHas('tickets', function ($q) use ($user) {
                 $q->where('creator_id', $user->id);

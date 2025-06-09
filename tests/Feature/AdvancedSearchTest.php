@@ -50,8 +50,8 @@ class AdvancedSearchTest extends TestCase
 
         $ticket = Ticket::factory()->create([
             'subject' => 'Filtered Test Ticket',
-            'status_id' => $status->id,
-            'priority_id' => $priority->id,
+            'ticket_status_id' => $status->id,
+            'ticket_priority_id' => $priority->id,
             'created_at' => now()->subDays(5),
         ]);
 
@@ -232,7 +232,8 @@ class AdvancedSearchTest extends TestCase
 
         $url = $savedSearch->getSearchUrl();
 
-        $this->assertStringContainsString('q=test%20query', $url);
+        // PHP's http_build_query uses + for spaces, which is valid URL encoding
+        $this->assertStringContainsString('q=test+query', $url);
         $this->assertStringContainsString('saved_search='.$savedSearch->id, $url);
     }
 }
