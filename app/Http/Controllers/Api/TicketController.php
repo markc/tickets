@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\TicketStatusChanged;
+use App\Events\TicketUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\Office;
 use App\Models\Ticket;
@@ -188,8 +190,22 @@ class TicketController extends Controller
 
         $request->validate($rules);
 
+        // Get original status for status change event
+        $originalStatus = $ticket->status;
+        
+        // Track changes for the event
+        $changes = array_intersect_key($request->all(), array_flip(array_keys($rules)));
+        
         $ticket->update($request->only(array_keys($rules)));
         $ticket->load(['creator', 'assignedTo', 'office', 'status', 'priority']);
+
+        // Dispatch status change event if status was updated
+        if (isset($changes['ticket_status_id']) && $originalStatus->id !== $ticket->ticket_status_id) {
+            event(new TicketStatusChanged($ticket, $originalStatus, $ticket->status, $request->user()));
+        }
+
+        // Dispatch general update event
+        event(new TicketUpdated($ticket, $request->user(), $changes));
 
         return response()->json([
             'data' => $ticket,

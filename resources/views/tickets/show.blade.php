@@ -1,3 +1,7 @@
+@push('meta')
+    <meta name="ticket-uuid" content="{{ $ticket->uuid }}">
+@endpush
+
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
@@ -46,7 +50,7 @@
                         <div class="space-y-2">
                             <div>
                                 <span class="font-medium">Status:</span>
-                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ml-2" 
+                                <span class="ticket-status inline-flex px-2 py-1 text-xs font-semibold rounded-full ml-2" 
                                       style="background-color: {{ $ticket->status->color }}20; color: {{ $ticket->status->color }};">
                                     {{ $ticket->status->name }}
                                 </span>
@@ -176,6 +180,7 @@
             @if($replies->count() > 0)
                 <div class="space-y-4">
                     <h3 class="text-lg font-semibold">Replies</h3>
+                    <div class="replies-container space-y-4">
                     @foreach($replies as $reply)
                         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg {{ $reply->is_internal ? 'border-l-4 border-yellow-400' : '' }}">
                             <div class="p-6">
@@ -222,6 +227,7 @@
                             </div>
                         </div>
                     @endforeach
+                    </div>
                 </div>
             @endif
 

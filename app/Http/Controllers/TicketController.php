@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TicketReplyCreated;
+use App\Events\TicketStatusChanged;
+use App\Events\TicketUpdated;
 use App\Http\Requests\StoreTicketRequest;
 use App\Models\Attachment;
 use App\Models\Office;
@@ -178,6 +181,10 @@ class TicketController extends Controller
         if (! $isInternal) {
             $this->sendReplyNotifications($ticket, $reply);
         }
+
+        // Dispatch real-time event
+        $reply->load(['user', 'attachments']);
+        event(new TicketReplyCreated($reply, $ticket));
 
         return back()->with('success', 'Reply added successfully!');
     }
