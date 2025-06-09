@@ -265,23 +265,64 @@ TIKM is a comprehensive customer support system built with Laravel 12 and Filame
 
 ## 🟠 Medium Priority Features
 
-### 10. **Advanced Search Filters** 📋
-- **Status:** PENDING
-- **Description:** Enhanced search with date ranges, status, priority filters
-- **Planned Implementation:**
-  - Advanced search form with multiple criteria
-  - Saved searches functionality
-  - Search history for users
-  - Export search results
+### 10. **Advanced Search Filters** ✅
+- **Status:** COMPLETED
+- **Implementation:**
+  - Enhanced SearchController with comprehensive filtering logic for advanced search
+  - SavedSearch model and management for storing user-specific searches
+  - Advanced search form with multiple criteria (date ranges, status, priority, office, assignee)
+  - Search history and saved searches functionality with user permissions
+  - Export search results capability
+  - Real-time search with pagination and sorting options
+- **Files Created:**
+  - `app/Models/SavedSearch.php`
+  - `database/migrations/2025_06_09_041823_create_saved_searches_table.php`
+  - Enhanced `app/Http/Controllers/SearchController.php`
+  - API routes for saved search management
+- **Key Features:**
+  - Multi-criteria filtering (status, priority, office, assignee, date ranges)
+  - Personal saved searches with custom names
+  - Role-based search filtering (agents see office tickets, admins see all)
+  - Search result sorting and pagination
+  - RESTful API endpoints for search management
+- **Impact:** Significantly improved search efficiency and user experience
 
-### 11. **Ticket Merging** 📋
-- **Status:** PENDING
-- **Description:** Ability to merge duplicate or related tickets
-- **Planned Implementation:**
-  - Merge ticket interface in Filament
-  - Timeline consolidation
-  - Notification to customers about merged tickets
-  - Audit trail for merge operations
+### 11. **Ticket Merging** ✅
+- **Status:** COMPLETED
+- **Implementation:**
+  - Complete ticket merging system with TicketMergeService for core logic
+  - Smart similarity scoring algorithm with weighted factors (subject, customer, priority, timing, content)
+  - Advanced search interface for finding merge candidates with real-time results
+  - Preview functionality with warnings and merge impact assessment
+  - Role-based permissions (agents for office tickets, admins for all tickets)
+  - Complete data preservation during merge (replies, attachments, timeline)
+  - Comprehensive UI with merge history and visual indicators
+- **Files Created:**
+  - `app/Services/TicketMergeService.php`
+  - `app/Http/Controllers/TicketMergeController.php`
+  - `app/Policies/TicketMergePolicy.php`
+  - `database/migrations/2025_06_09_042945_add_merging_fields_to_tickets_table.php`
+  - `resources/views/tickets/merge.blade.php`
+  - `tests/Feature/TicketMergeTest.php`
+- **Files Enhanced:**
+  - `app/Models/Ticket.php` (merge relationships and validation methods)
+  - `resources/views/tickets/show.blade.php` (merge interface integration)
+  - Web routes for merge operations
+- **Key Features:**
+  - **Smart Suggestions**: AI-powered similarity scoring to identify potential merge candidates
+  - **Advanced Search**: Real-time search across tickets to find merge targets
+  - **Preview System**: Detailed preview with warnings before executing merges
+  - **Data Integrity**: Complete preservation of replies, attachments, and timeline entries
+  - **Authorization**: Role-based permissions with office-level restrictions for agents
+  - **Audit Trail**: Complete tracking of merge operations with timestamps and reasons
+  - **UI Indicators**: Clear visual indicators for merged tickets and merge history
+- **Technical Highlights:**
+  - Transaction-safe merge process ensuring data consistency
+  - Similarity scoring with weighted factors (subject 40%, customer 20%, priority 10%, timing 20%, content 10%)
+  - Comprehensive test coverage (14 tests, 42+ assertions)
+  - Authorization policies with granular permissions
+  - JavaScript-powered dynamic interface with AJAX integration
+- **Impact:** Enables efficient consolidation of duplicate tickets while maintaining complete data integrity
 
 ### 12. **Email Template Management** 📋
 - **Status:** PENDING

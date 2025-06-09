@@ -401,6 +401,201 @@ POST /api/canned-responses/{id}/use
 
 ---
 
+## 🔀 Ticket Merging System
+
+### Overview
+Comprehensive ticket merging functionality allowing agents to consolidate duplicate or related tickets while preserving all data and maintaining complete audit trails.
+
+### Features
+- **Smart Merge Suggestions**: AI-powered similarity scoring to identify potential merge candidates
+- **Advanced Search**: Real-time search across tickets to find merge targets
+- **Preview Functionality**: Detailed preview with warnings before executing merges
+- **Complete Data Preservation**: All replies, attachments, and timeline entries are preserved
+- **Role-Based Permissions**: Agents can merge within their offices, admins can merge any tickets
+- **Audit Trail**: Complete tracking of merge operations with timestamps and reasons
+- **UI Indicators**: Clear visual indicators for merged tickets and merge history
+
+### Key Benefits
+- **Reduce Ticket Duplication**: Consolidate related issues into single tickets
+- **Improve Response Efficiency**: Agents work on unified ticket threads
+- **Maintain Data Integrity**: No loss of customer communications or attachments
+- **Enhanced Organization**: Better ticket management and cleaner workspace
+- **Complete Transparency**: Full audit trail for compliance and tracking
+
+### Usage Instructions
+
+#### Accessing Merge Interface (Agents & Admins)
+1. Navigate to any ticket you have permission to merge
+2. Click the **🔀 Merge Ticket** button in the ticket actions section
+3. Review source ticket information and suggested merge targets
+
+#### Smart Suggestions
+The system automatically suggests merge candidates based on:
+- **Subject Similarity**: Tickets with similar subject lines (up to 40 points)
+- **Same Customer**: Tickets from the same user (20 points)
+- **Same Priority**: Matching priority levels (10 points)
+- **Recent Creation**: Newer tickets score higher (up to 20 points)
+- **Content Similarity**: Matching content keywords (up to 10 points)
+
+#### Manual Search
+1. Use the search box to find specific tickets by:
+   - Subject line keywords
+   - Ticket UUID
+   - Content snippets
+2. Results show similarity scores and key ticket information
+3. Click any result to select as merge target
+
+#### Merge Preview
+Before executing a merge, the system shows:
+- **Target Ticket Details**: Complete information about the destination ticket
+- **Similarity Score**: Percentage match between tickets
+- **Warnings**: Potential issues like different customers, priorities, or large time gaps
+- **Impact Assessment**: What data will be merged and preserved
+
+#### Executing the Merge
+1. Select the target ticket from suggestions or search results
+2. Review the preview information and warnings
+3. Optionally provide a reason for the merge
+4. Confirm the merge operation
+
+### Technical Implementation
+
+#### Database Design
+```sql
+-- New fields added to tickets table
+ALTER TABLE tickets ADD COLUMN merged_into_id UUID;
+ALTER TABLE tickets ADD COLUMN merged_at TIMESTAMP;
+ALTER TABLE tickets ADD COLUMN merged_by_id BIGINT;
+ALTER TABLE tickets ADD COLUMN merge_reason TEXT;
+ALTER TABLE tickets ADD COLUMN is_merged BOOLEAN DEFAULT FALSE;
+```
+
+#### Core Service Methods
+```php
+// Merge tickets with complete data preservation
+$mergeService->mergeTickets($sourceTicket, $targetTicket, $user, $reason);
+
+// Get smart suggestions for merge candidates
+$suggestions = $mergeService->getSuggestedMergeTargets($ticket);
+
+// Calculate similarity score between tickets
+$score = $mergeService->calculateSimilarityScore($ticket1, $ticket2);
+```
+
+#### Data Preservation Process
+1. **Replies Migration**: All replies moved to target ticket with context preservation
+2. **Attachments Transfer**: File attachments relocated maintaining relationships
+3. **Timeline Consolidation**: Timeline entries merged with source ticket references
+4. **Audit Logging**: Complete merge operation logged for compliance
+
+### Authorization & Security
+
+#### Permission Levels
+- **Customers**: Cannot access merge functionality
+- **Agents**: Can merge tickets within their assigned offices
+- **Administrators**: Can merge any tickets across all offices
+
+#### Validation Rules
+- Cannot merge ticket into itself
+- Cannot merge already merged tickets
+- Cannot merge tickets from different offices (unless admin override)
+- Both tickets must exist and be accessible to the user
+
+#### Security Features
+- **Input Validation**: All merge parameters validated server-side
+- **Authorization Checks**: Multiple permission layers throughout the process
+- **Transaction Safety**: Database transactions ensure data consistency
+- **Audit Logging**: Complete operation tracking for security compliance
+
+### UI/UX Features
+
+#### Visual Indicators
+- **Merge Button**: Prominent merge action button for authorized users
+- **Merged Ticket Badges**: Clear indicators when viewing merged tickets
+- **Merge History**: Display of all tickets merged into current ticket
+- **Similarity Scores**: Color-coded match percentages for easy identification
+
+#### Interactive Elements
+- **Real-time Search**: Instant results as you type
+- **Preview Modals**: Detailed merge preview with expandable sections
+- **Warning System**: Color-coded alerts for potential merge issues
+- **Success Notifications**: Clear feedback when merges complete
+
+### Administrative Features
+
+#### Merge Analytics
+- Track merge frequency and patterns
+- Monitor agent merge efficiency
+- Identify common duplicate ticket sources
+- Generate merge reports for optimization
+
+#### Configuration Options
+- Adjust similarity scoring weights
+- Configure merge permission rules
+- Set warning thresholds
+- Customize merge reasons dropdown
+
+### API Integration
+
+#### Available Endpoints
+```php
+// Core merge operations
+GET    /tickets/{ticket}/merge           // Show merge interface
+GET    /tickets/{ticket}/merge/search    // Search for merge targets
+GET    /tickets/{ticket}/merge/preview   // Preview merge operation
+POST   /tickets/{ticket}/merge           // Execute merge
+
+// Helper endpoints
+GET    /api/tickets/{ticket}/suggestions // Get merge suggestions
+POST   /api/tickets/{ticket}/similarity  // Calculate similarity scores
+```
+
+#### Response Formats
+```json
+// Merge suggestions response
+{
+  "suggestions": [
+    {
+      "ticket": {...},
+      "similarity_score": 87.5,
+      "reason": "Similar subject"
+    }
+  ]
+}
+
+// Merge preview response
+{
+  "target_ticket": {...},
+  "can_merge": true,
+  "similarity_score": 92.3,
+  "warnings": ["Different customers", "Large time gap"]
+}
+```
+
+### Best Practices
+
+#### For Agents
+1. **Review Suggestions**: Always check smart suggestions before manual search
+2. **Read Warnings**: Pay attention to preview warnings before merging
+3. **Provide Reasons**: Include clear explanations for merge decisions
+4. **Verify Customers**: Ensure tickets actually represent the same issue
+5. **Check Timelines**: Review ticket creation dates for context
+
+#### For Administrators
+1. **Monitor Patterns**: Track common merge scenarios for process optimization
+2. **Train Agents**: Provide guidance on effective merge practices
+3. **Review Permissions**: Regularly audit merge access permissions
+4. **Analyze Efficiency**: Use merge data to improve ticket routing
+
+### Future Enhancements
+- **Bulk Merge Operations**: Merge multiple tickets simultaneously
+- **Automated Merge Suggestions**: Proactive merge recommendations
+- **Machine Learning Integration**: Enhanced similarity detection
+- **Merge Templates**: Predefined merge reason templates
+- **Advanced Reporting**: Detailed merge analytics and insights
+
+---
+
 ## 🛡️ Security Hardening
 
 ### Overview
