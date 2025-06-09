@@ -19,18 +19,15 @@ class TicketStatusFactory extends Factory
         return [
             'name' => fake()->randomElement(['Open', 'In Progress', 'Resolved', 'Closed']),
             'color' => fake()->hexColor(),
-            'is_default' => false,
-            'is_closed' => fake()->boolean(25),
         ];
     }
 
     /**
-     * Indicate that this is the default status.
+     * Indicate that this is an open status.
      */
-    public function default(): static
+    public function open(): static
     {
         return $this->state(fn (array $attributes) => [
-            'is_default' => true,
             'name' => 'Open',
         ]);
     }
@@ -41,7 +38,6 @@ class TicketStatusFactory extends Factory
     public function closed(): static
     {
         return $this->state(fn (array $attributes) => [
-            'is_closed' => true,
             'name' => fake()->randomElement(['Resolved', 'Closed']),
         ]);
     }

@@ -87,8 +87,87 @@
                             </div>
                         </div>
                     @endif
+
+                    <!-- Admin/Agent Actions -->
+                    @if(!auth()->user()->isCustomer() && !$ticket->is_merged)
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <h4 class="font-medium mb-3">Ticket Actions</h4>
+                            <div class="flex gap-2">
+                                @can('merge', $ticket)
+                                    <a href="{{ route('tickets.merge.show', $ticket) }}" 
+                                       class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded text-sm">
+                                        🔀 Merge Ticket
+                                    </a>
+                                @endcan
+                            </div>
+                        </div>
+                    @endif
+
+                    @if($ticket->is_merged)
+                        <div class="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-red-800 font-medium">This ticket has been merged</p>
+                                    <p class="text-red-600 text-sm">
+                                        Merged into 
+                                        <a href="{{ route('tickets.show', $ticket->mergedInto) }}" class="underline">
+                                            #{{ $ticket->merged_into_id }}
+                                        </a>
+                                        on {{ $ticket->merged_at->format('M j, Y \a\t g:i A') }}
+                                        @if($ticket->mergedBy)
+                                            by {{ $ticket->mergedBy->name }}
+                                        @endif
+                                    </p>
+                                    @if($ticket->merge_reason)
+                                        <p class="text-red-600 text-sm mt-1">
+                                            <strong>Reason:</strong> {{ $ticket->merge_reason }}
+                                        </p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
+
+            <!-- Merged Tickets -->
+            @if($ticket->hasMergedTickets())
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-4">
+                            Merged Tickets ({{ $ticket->getMergedTicketsCount() }})
+                        </h3>
+                        <div class="space-y-3">
+                            @foreach($ticket->getAllMergedTickets() as $mergedTicket)
+                                <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="font-medium text-gray-800">
+                                            #{{ $mergedTicket->uuid }} - {{ $mergedTicket->subject }}
+                                        </h4>
+                                        <span class="text-xs text-gray-500">
+                                            Merged {{ $mergedTicket->merged_at->format('M j, Y') }}
+                                        </span>
+                                    </div>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-600 mb-2">
+                                        <span><strong>Customer:</strong> {{ $mergedTicket->creator->name }}</span>
+                                        <span><strong>Status:</strong> {{ $mergedTicket->status->name }}</span>
+                                        <span><strong>Priority:</strong> {{ $mergedTicket->priority->name }}</span>
+                                        <span><strong>Created:</strong> {{ $mergedTicket->created_at->format('M j, Y') }}</span>
+                                    </div>
+                                    @if($mergedTicket->merge_reason)
+                                        <p class="text-sm text-gray-600">
+                                            <strong>Merge reason:</strong> {{ $mergedTicket->merge_reason }}
+                                        </p>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <!-- Replies -->
             @php

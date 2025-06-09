@@ -18,22 +18,8 @@ class TicketPriorityFactory extends Factory
     {
         return [
             'name' => fake()->randomElement(['Low', 'Medium', 'High', 'Critical']),
-            'level' => fake()->numberBetween(1, 4),
             'color' => fake()->hexColor(),
-            'is_default' => false,
         ];
-    }
-
-    /**
-     * Indicate that this is the default priority.
-     */
-    public function default(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'is_default' => true,
-            'name' => 'Medium',
-            'level' => 2,
-        ]);
     }
 
     /**
@@ -43,7 +29,16 @@ class TicketPriorityFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'name' => 'High',
-            'level' => 3,
+        ]);
+    }
+
+    /**
+     * Indicate that this is a medium priority.
+     */
+    public function medium(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name' => 'Medium',
         ]);
     }
 
@@ -54,7 +49,6 @@ class TicketPriorityFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'name' => 'Low',
-            'level' => 1,
         ]);
     }
 }

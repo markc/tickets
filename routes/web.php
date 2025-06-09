@@ -54,6 +54,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/tickets/{ticket}/reply', [\App\Http\Controllers\TicketController::class, 'reply'])
         ->middleware('rate.limit:tickets')
         ->name('tickets.reply');
+
+    // Ticket merging routes
+    Route::get('/tickets/{ticket}/merge', [\App\Http\Controllers\TicketMergeController::class, 'show'])->name('tickets.merge.show');
+    Route::get('/tickets/{ticket}/merge/search', [\App\Http\Controllers\TicketMergeController::class, 'search'])->name('tickets.merge.search');
+    Route::get('/tickets/{ticket}/merge/preview', [\App\Http\Controllers\TicketMergeController::class, 'preview'])->name('tickets.merge.preview');
+    Route::post('/tickets/{ticket}/merge', [\App\Http\Controllers\TicketMergeController::class, 'merge'])->name('tickets.merge');
 });
 
 require __DIR__.'/auth.php';

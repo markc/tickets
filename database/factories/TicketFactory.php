@@ -26,9 +26,14 @@ class TicketFactory extends Factory
             'content' => fake()->paragraphs(3, true),
             'creator_id' => User::factory(),
             'office_id' => Office::factory(),
-            'status_id' => TicketStatus::factory(),
-            'priority_id' => TicketPriority::factory(),
+            'ticket_status_id' => TicketStatus::factory(),
+            'ticket_priority_id' => TicketPriority::factory(),
             'assigned_to_id' => null,
+            'is_merged' => false,
+            'merged_into_id' => null,
+            'merged_at' => null,
+            'merged_by_id' => null,
+            'merge_reason' => null,
         ];
     }
 
@@ -48,7 +53,7 @@ class TicketFactory extends Factory
     public function highPriority(): static
     {
         return $this->state(fn (array $attributes) => [
-            'priority_id' => TicketPriority::factory(['name' => 'High']),
+            'ticket_priority_id' => TicketPriority::factory(['name' => 'High']),
         ]);
     }
 
@@ -58,7 +63,20 @@ class TicketFactory extends Factory
     public function open(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status_id' => TicketStatus::factory(['name' => 'Open']),
+            'ticket_status_id' => TicketStatus::factory(['name' => 'Open']),
+        ]);
+    }
+
+    /**
+     * Indicate that the ticket is merged.
+     */
+    public function merged(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_merged' => true,
+            'merged_at' => fake()->dateTimeThisMonth(),
+            'merged_by_id' => User::factory(['role' => 'admin']),
+            'merge_reason' => fake()->sentence(),
         ]);
     }
 }
