@@ -192,10 +192,10 @@ class TicketController extends Controller
 
         // Get original status for status change event
         $originalStatus = $ticket->status;
-        
+
         // Track changes for the event
         $changes = array_intersect_key($request->all(), array_flip(array_keys($rules)));
-        
+
         $ticket->update($request->only(array_keys($rules)));
         $ticket->load(['creator', 'assignedTo', 'office', 'status', 'priority']);
 

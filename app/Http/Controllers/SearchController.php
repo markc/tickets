@@ -30,7 +30,18 @@ class SearchController extends Controller
         $filters = $request->only(['status', 'priority', 'office', 'assignee', 'date_from', 'date_to']);
         $sortBy = $request->input('sort_by', 'relevance');
         $sortOrder = $request->input('sort_order', 'desc');
-        $results = [];
+
+        // Initialize results with empty paginated collections
+        $results = [
+            'tickets' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10, 1, [
+                'path' => request()->url(),
+                'pageName' => 'page',
+            ]),
+            'faqs' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10, 1, [
+                'path' => request()->url(),
+                'pageName' => 'page',
+            ]),
+        ];
 
         if ($type === 'tickets' || $type === 'all') {
             $results['tickets'] = $this->searchTickets($query, $filters, $sortBy, $sortOrder);
@@ -111,14 +122,22 @@ class SearchController extends Controller
             }
         }
 
-        // Add eager loading for related models
-        if (is_object($ticketQuery) && method_exists($ticketQuery, 'with')) {
-            $ticketQuery->with(['creator', 'assignedTo', 'office', 'status', 'priority']);
-        }
+        // Paginate and load relationships
+        if (is_object($ticketQuery) && method_exists($ticketQuery, 'paginate')) {
+            $results = $ticketQuery->paginate(10);
 
-        return is_object($ticketQuery) && method_exists($ticketQuery, 'paginate')
-            ? $ticketQuery->paginate(15)
-            : $ticketQuery->paginate(15);
+            // Load relationships after paginating for Scout results
+            if (method_exists($ticketQuery, 'query')) {
+                $results->getCollection()->load(['creator', 'assignedTo', 'office', 'status', 'priority']);
+            }
+
+            return $results;
+        } else {
+            // Regular Eloquent query - can use with() directly
+            $ticketQuery->with(['creator', 'assignedTo', 'office', 'status', 'priority']);
+
+            return $ticketQuery->paginate(10);
+        }
     }
 
     private function applyTicketFilters($query, array $filters, string $sortBy, string $sortOrder)
@@ -165,17 +184,49 @@ class SearchController extends Controller
 
     private function searchFaqs(string $query, array $filters)
     {
-        $faqQuery = FAQ::search($query)
-            ->where('is_published', true);
+        // Start with Scout search if query is provided
+        if (! empty(trim($query))) {
+            try {
+                $faqQuery = FAQ::search($query);
 
-        // Office/category filter for FAQs
-        if (! empty($filters['office'])) {
-            $faqQuery = $faqQuery->query(function ($builder) use ($filters) {
-                $builder->whereIn('office_id', $filters['office']);
-            });
+                // Office/category filter for FAQs
+                if (! empty($filters['office'])) {
+                    $faqQuery = $faqQuery->query(function ($builder) use ($filters) {
+                        $builder->whereIn('office_id', $filters['office'])
+                            ->where('is_published', true);
+                    });
+                } else {
+                    $faqQuery = $faqQuery->query(function ($builder) {
+                        $builder->where('is_published', true);
+                    });
+                }
+
+                $results = $faqQuery->paginate(10);
+
+                // Load relationships after paginating
+                $results->getCollection()->load('office');
+
+                return $results;
+            } catch (\Exception $e) {
+                // Fallback to regular query if Scout fails
+                $faqQuery = FAQ::query()->where('is_published', true);
+
+                if (! empty($filters['office'])) {
+                    $faqQuery->whereIn('office_id', $filters['office']);
+                }
+
+                return $faqQuery->with('office')->paginate(10);
+            }
+        } else {
+            // If no search query, use regular query builder with filters
+            $faqQuery = FAQ::query()->where('is_published', true);
+
+            if (! empty($filters['office'])) {
+                $faqQuery->whereIn('office_id', $filters['office']);
+            }
+
+            return $faqQuery->with('office')->paginate(10);
         }
-
-        return $faqQuery->with('office')->paginate(10);
     }
 
     private function getFilterOptions()

@@ -26,10 +26,10 @@ class TicketUpdated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('tickets.' . $this->ticket->uuid),
-            new PrivateChannel('user.' . $this->ticket->creator_id),
-            ...$this->ticket->assignedTo ? [new PrivateChannel('user.' . $this->ticket->assigned_to_id)] : [],
-            new PrivateChannel('office.' . $this->ticket->office_id),
+            new PrivateChannel('tickets.'.$this->ticket->uuid),
+            new PrivateChannel('user.'.$this->ticket->creator_id),
+            ...$this->ticket->assignedTo ? [new PrivateChannel('user.'.$this->ticket->assigned_to_id)] : [],
+            new PrivateChannel('office.'.$this->ticket->office_id),
         ];
     }
 

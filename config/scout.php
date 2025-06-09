@@ -148,6 +148,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | TntSearch Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure your TntSearch settings. TntSearch is a pure PHP
+    | full-text search engine with minimal memory footprint, perfect for
+    | small to medium-sized applications.
+    |
+    */
+
+    'tntsearch' => [
+        'storage' => storage_path('scout'),
+        'fuzziness' => env('TNTSEARCH_FUZZINESS', true),
+        'fuzzy' => [
+            'max_expansions' => env('TNTSEARCH_FUZZY_MAX_EXPANSIONS', 3),
+            'distance' => env('TNTSEARCH_FUZZY_DISTANCE', 2),
+        ],
+        'tokenizers' => [
+            '\TeamTNT\TNTSearch\Support\TokenizerInterface' => [
+                //
+            ],
+        ],
+        'asYouType' => env('TNTSEARCH_ASYOUTYPE', false),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Typesense Configuration
     |--------------------------------------------------------------------------
     |

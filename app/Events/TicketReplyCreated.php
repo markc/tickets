@@ -4,7 +4,6 @@ namespace App\Events;
 
 use App\Models\Ticket;
 use App\Models\TicketReply;
-use App\Models\User;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -26,10 +25,10 @@ class TicketReplyCreated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('tickets.' . $this->ticket->uuid),
-            new PrivateChannel('user.' . $this->ticket->creator_id),
-            ...$this->ticket->assignedTo ? [new PrivateChannel('user.' . $this->ticket->assigned_to_id)] : [],
-            new PrivateChannel('office.' . $this->ticket->office_id),
+            new PrivateChannel('tickets.'.$this->ticket->uuid),
+            new PrivateChannel('user.'.$this->ticket->creator_id),
+            ...$this->ticket->assignedTo ? [new PrivateChannel('user.'.$this->ticket->assigned_to_id)] : [],
+            new PrivateChannel('office.'.$this->ticket->office_id),
         ];
     }
 
@@ -50,7 +49,7 @@ class TicketReplyCreated implements ShouldBroadcast
                     'role' => $this->reply->user->role,
                     'avatar_url' => $this->reply->user->avatar_url,
                 ],
-                'attachments' => $this->reply->attachments->map(fn($attachment) => [
+                'attachments' => $this->reply->attachments->map(fn ($attachment) => [
                     'id' => $attachment->id,
                     'filename' => $attachment->filename,
                     'size' => $attachment->size,

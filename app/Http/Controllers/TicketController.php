@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Events\TicketReplyCreated;
-use App\Events\TicketStatusChanged;
-use App\Events\TicketUpdated;
 use App\Http\Requests\StoreTicketRequest;
 use App\Models\Attachment;
 use App\Models\Office;
