@@ -15,7 +15,7 @@ beforeEach(function () {
     $this->customer = User::factory()->create(['role' => 'customer']);
 
     $this->office = Office::factory()->create(['name' => 'Technical Support']);
-    
+
     // Associate agent with office so they can view tickets
     $this->agent->offices()->attach($this->office);
 

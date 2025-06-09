@@ -25,6 +25,7 @@ class TicketAssignmentService
 
         if ($selectedAgent) {
             $this->assignTicketToAgent($ticket, $selectedAgent);
+
             return $selectedAgent;
         }
 
@@ -104,7 +105,7 @@ class TicketAssignmentService
     public function getNextAgentForOffice(int $officeId): ?User
     {
         $office = \App\Models\Office::find($officeId);
-        if (!$office) {
+        if (! $office) {
             return null;
         }
 

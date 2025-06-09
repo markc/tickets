@@ -19,7 +19,7 @@ class TicketManagementTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Fake notifications to prevent email sending issues in tests
         Notification::fake();
 
@@ -95,7 +95,7 @@ class TicketManagementTest extends TestCase
         $agent = User::factory()->create(['role' => 'agent']);
         $customer = User::factory()->create(['role' => 'customer']);
         $ticket = Ticket::factory()->create(['creator_id' => $customer->id]);
-        
+
         // Associate agent with ticket's office so they can view it
         $agent->offices()->attach($ticket->office_id);
 

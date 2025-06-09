@@ -42,8 +42,8 @@ class TicketController extends Controller
     {
         $validated = $request->validated();
 
-        $defaultStatus = TicketStatus::where('is_default', true)->first() 
-            ?? TicketStatus::where('name', 'Open')->first() 
+        $defaultStatus = TicketStatus::where('is_default', true)->first()
+            ?? TicketStatus::where('name', 'Open')->first()
             ?? TicketStatus::first();
 
         $ticket = Ticket::create([

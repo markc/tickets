@@ -82,29 +82,29 @@ class SearchController extends Controller
                 // For collection driver, get all results and paginate manually
                 if (config('scout.driver') === 'collection') {
                     $allResults = Ticket::search($query)->get();
-                    
+
                     // Load relationships for filtering
                     $allResults->load(['creator', 'assignedTo', 'office', 'status', 'priority']);
-                    
+
                     // Apply authorization filters
                     $filteredResults = $this->applyAuthorizationToCollection($allResults);
-                    
+
                     // Apply additional filters
                     $filteredResults = $this->applyFiltersToCollection($filteredResults, $filters);
-                    
+
                     // Sort results
                     if ($sortBy !== 'relevance') {
                         $filteredResults = $filteredResults->sortBy($sortBy, SORT_REGULAR, $sortOrder === 'desc');
                     }
-                    
+
                     // Manual pagination
                     $page = request()->input('page', 1);
                     $perPage = 10;
                     $offset = ($page - 1) * $perPage;
-                    
+
                     $paginatedItems = $filteredResults->slice($offset, $perPage)->values();
                     $total = $filteredResults->count();
-                    
+
                     return new \Illuminate\Pagination\LengthAwarePaginator(
                         $paginatedItems,
                         $total,
@@ -116,7 +116,7 @@ class SearchController extends Controller
                         ]
                     );
                 }
-                
+
                 $ticketQuery = Ticket::search($query)->query(function ($builder) use ($filters, $sortBy, $sortOrder) {
                     return $this->applyTicketFilters($builder, $filters, $sortBy, $sortOrder);
                 });
@@ -178,7 +178,6 @@ class SearchController extends Controller
             return $ticketQuery->paginate(10);
         }
     }
-
 
     private function applyTicketFilters($query, array $filters, string $sortBy, string $sortOrder)
     {
@@ -377,12 +376,13 @@ class SearchController extends Controller
             if (Auth::user()->isAdmin()) {
                 return true;
             }
-            
+
             if (Auth::user()->isAgent()) {
                 $userOfficeIds = Auth::user()->offices->pluck('id')->toArray();
+
                 return in_array($ticket->office_id, $userOfficeIds) || $ticket->assigned_to_id === Auth::id();
             }
-            
+
             // Customer can only see their own tickets
             return $ticket->creator_id === Auth::id();
         });
@@ -392,41 +392,41 @@ class SearchController extends Controller
     {
         return $tickets->filter(function ($ticket) use ($filters) {
             // Status filter
-            if (!empty($filters['status'])) {
-                if (!in_array($ticket->status->name ?? '', $filters['status'])) {
+            if (! empty($filters['status'])) {
+                if (! in_array($ticket->status->name ?? '', $filters['status'])) {
                     return false;
                 }
             }
 
             // Priority filter
-            if (!empty($filters['priority'])) {
-                if (!in_array($ticket->priority->name ?? '', $filters['priority'])) {
+            if (! empty($filters['priority'])) {
+                if (! in_array($ticket->priority->name ?? '', $filters['priority'])) {
                     return false;
                 }
             }
 
             // Office filter
-            if (!empty($filters['office'])) {
-                if (!in_array($ticket->office_id, $filters['office'])) {
+            if (! empty($filters['office'])) {
+                if (! in_array($ticket->office_id, $filters['office'])) {
                     return false;
                 }
             }
 
             // Assignee filter
-            if (!empty($filters['assignee'])) {
-                if (!in_array($ticket->assigned_to_id, $filters['assignee'])) {
+            if (! empty($filters['assignee'])) {
+                if (! in_array($ticket->assigned_to_id, $filters['assignee'])) {
                     return false;
                 }
             }
 
             // Date range filters
-            if (!empty($filters['date_from'])) {
-                if ($ticket->created_at < $filters['date_from'] . ' 00:00:00') {
+            if (! empty($filters['date_from'])) {
+                if ($ticket->created_at < $filters['date_from'].' 00:00:00') {
                     return false;
                 }
             }
-            if (!empty($filters['date_to'])) {
-                if ($ticket->created_at > $filters['date_to'] . ' 23:59:59') {
+            if (! empty($filters['date_to'])) {
+                if ($ticket->created_at > $filters['date_to'].' 23:59:59') {
                     return false;
                 }
             }

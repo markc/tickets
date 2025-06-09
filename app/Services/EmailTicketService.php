@@ -33,8 +33,8 @@ class EmailTicketService
         try {
             $user = $this->findOrCreateUser($fromEmail, $fromName);
             $defaultOffice = $this->getDefaultOffice();
-            $defaultStatus = TicketStatus::where('is_default', true)->first() 
-                ?? TicketStatus::where('name', 'Open')->first() 
+            $defaultStatus = TicketStatus::where('is_default', true)->first()
+                ?? TicketStatus::where('name', 'Open')->first()
                 ?? TicketStatus::first();
             $defaultPriority = $this->getDefaultPriority();
 
@@ -158,7 +158,7 @@ class EmailTicketService
         if (preg_match('/support\+([a-f0-9\-]{36})@/i', $email, $matches)) {
             return $matches[1];
         }
-        
+
         return null;
     }
 
@@ -168,22 +168,22 @@ class EmailTicketService
         if (str_contains($email, 'billing@')) {
             return Office::where('name', 'Sales')->first(); // Use Sales for billing
         }
-        
+
         if (str_contains($email, 'technical@') || str_contains($email, 'tech@')) {
             return Office::where('name', 'Technical Support')->first();
         }
-        
+
         // Check subject for keywords
         $subject = strtolower($subject);
-        
+
         if (str_contains($subject, 'billing') || str_contains($subject, 'invoice') || str_contains($subject, 'payment')) {
             return Office::where('name', 'Sales')->first(); // Use Sales for billing
         }
-        
+
         if (str_contains($subject, 'server') || str_contains($subject, 'technical') || str_contains($subject, 'error') || str_contains($subject, 'bug')) {
             return Office::where('name', 'Technical Support')->first();
         }
-        
+
         // Default to Customer Service
         return Office::where('name', 'Customer Service')->first();
     }
@@ -284,7 +284,7 @@ class EmailTicketService
     {
         $closedStatus = TicketStatus::where('name', 'Closed')->first();
         $openStatus = TicketStatus::where('is_default', true)->first()
-            ?? TicketStatus::where('name', 'Open')->first() 
+            ?? TicketStatus::where('name', 'Open')->first()
             ?? TicketStatus::first();
 
         if ($closedStatus && $openStatus && $ticket->ticket_status_id === $closedStatus->id && $user->isCustomer()) {

@@ -185,11 +185,11 @@ class SearchTest extends TestCase
         $response = $this->actingAs($user)->get('/search?q=technical');
 
         $response->assertSuccessful();
-        
+
         // Just check that we have some results and pagination links
         $response->assertSee('Technical issue');
         $response->assertSee('12 results'); // Should show total count
-        
+
         // For now, let's just verify the search works - pagination can be a separate concern
         // This test is mainly to ensure search functionality works properly
     }

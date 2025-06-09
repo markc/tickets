@@ -6,7 +6,6 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\TicketCreated;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
@@ -30,7 +29,7 @@ class EmailProcessingTest extends TestCase
 
         // Test the service directly instead of the command
         $emailService = app(\App\Services\EmailTicketService::class);
-        
+
         $ticket = $emailService->createTicketFromEmail(
             'john@example.com',
             'John Doe',
@@ -44,7 +43,7 @@ class EmailProcessingTest extends TestCase
             'subject' => 'Help with login issue',
             'content' => 'I cannot login to my account. Please help.',
         ]);
-        
+
         $this->assertNotNull($ticket);
 
         $ticket = Ticket::where('subject', 'Help with login issue')->first();
@@ -71,7 +70,7 @@ class EmailProcessingTest extends TestCase
 
         // Test the service directly instead of the command
         $emailService = app(\App\Services\EmailTicketService::class);
-        
+
         $reply = $emailService->createReplyFromEmail(
             'test-uuid-12345',
             'jane@example.com',
@@ -94,12 +93,12 @@ class EmailProcessingTest extends TestCase
                 'filename' => 'test-document.pdf',
                 'content' => 'fake PDF content',
                 'mime_type' => 'application/pdf',
-                'size' => 15
-            ]
+                'size' => 15,
+            ],
         ];
 
         $emailService = app(\App\Services\EmailTicketService::class);
-        
+
         $ticket = $emailService->createTicketFromEmail(
             'attach@example.com',
             'Attachment Test',
@@ -121,20 +120,20 @@ class EmailProcessingTest extends TestCase
     {
         // Test that the service validates email addresses properly
         $emailService = app(\App\Services\EmailTicketService::class);
-        
+
         // This should not create a ticket due to invalid sender
         $result = $emailService->findOrCreateUser('noreply@spammer.com', 'Spammer');
-        
+
         // The method should still return a user but let's verify no ticket gets created
         // by testing the validation logic directly
         $command = app(\App\Console\Commands\ProcessIncomingEmail::class);
         $reflection = new \ReflectionClass($command);
         $method = $reflection->getMethod('isValidSender');
         $method->setAccessible(true);
-        
+
         $isValid = $method->invoke($command, 'noreply@spammer.com');
         $this->assertFalse($isValid);
-        
+
         // Verify no ticket was created from spam email
         $this->assertDatabaseMissing('tickets', [
             'subject' => 'Buy cheap products',
@@ -145,7 +144,7 @@ class EmailProcessingTest extends TestCase
     {
         // Test that the service handles invalid UUID gracefully
         $emailService = app(\App\Services\EmailTicketService::class);
-        
+
         // Try to create a reply to non-existent ticket - should return null
         $result = $emailService->createReplyFromEmail(
             'invalid-uuid-12345',
@@ -155,10 +154,10 @@ class EmailProcessingTest extends TestCase
             'Reply to non-existent ticket',
             []
         );
-        
+
         // The service should return null for invalid UUID
         $this->assertNull($result);
-        
+
         // No ticket should be created automatically
         $this->assertDatabaseMissing('tickets', [
             'subject' => 'Re: Something',

@@ -35,7 +35,7 @@ class KnowledgeBaseService
                     ->get()
                     ->filter(function ($faq) use ($ticket) {
                         // Only show published FAQs from same office or global FAQs (office_id = null)
-                        return $faq->is_published && 
+                        return $faq->is_published &&
                                ($faq->office_id === $ticket->office_id || $faq->office_id === null);
                     })
                     ->sortByDesc(function ($faq) use ($keywords) {
@@ -53,18 +53,18 @@ class KnowledgeBaseService
                 $allFaqs = FAQ::published()
                     ->where(function ($q) use ($ticket) {
                         $q->where('office_id', $ticket->office_id)
-                          ->orWhereNull('office_id');
+                            ->orWhereNull('office_id');
                     })
                     ->get();
 
                 $suggestions = $allFaqs->filter(function ($faq) use ($keywords) {
                     return $this->calculateRelevanceScore($faq, $keywords) > 0;
                 })
-                ->sortByDesc(function ($faq) use ($keywords) {
-                    return $this->calculateRelevanceScore($faq, $keywords);
-                })
-                ->take($limit)
-                ->values();
+                    ->sortByDesc(function ($faq) use ($keywords) {
+                        return $this->calculateRelevanceScore($faq, $keywords);
+                    })
+                    ->take($limit)
+                    ->values();
             }
 
             return $suggestions;
@@ -81,10 +81,10 @@ class KnowledgeBaseService
 
         return $searchResults->filter(function ($faq) use ($officeId) {
             // Only show published FAQs
-            if (!$faq->is_published) {
+            if (! $faq->is_published) {
                 return false;
             }
-            
+
             if ($officeId === null) {
                 return true; // Show all published if no office filter
             }
