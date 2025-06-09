@@ -78,4 +78,27 @@ class TicketPolicy
     {
         return false;
     }
+
+    /**
+     * Determine whether the user can merge tickets.
+     */
+    public function merge(User $user, Ticket $ticket): bool
+    {
+        // Customers cannot merge tickets
+        if ($user->isCustomer()) {
+            return false;
+        }
+
+        // Admins can merge any tickets
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        // Agents can merge tickets in their offices
+        if ($user->isAgent()) {
+            return $user->offices->contains($ticket->office_id);
+        }
+
+        return false;
+    }
 }

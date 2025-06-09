@@ -27,6 +27,11 @@ class Ticket extends Model
         'resolved_at',
         'sla_response_breached',
         'sla_resolution_breached',
+        'merged_into_id',
+        'merged_at',
+        'merged_by_id',
+        'merge_reason',
+        'is_merged',
     ];
 
     protected $casts = [
@@ -34,8 +39,10 @@ class Ticket extends Model
         'sla_resolution_due_at' => 'datetime',
         'first_response_at' => 'datetime',
         'resolved_at' => 'datetime',
+        'merged_at' => 'datetime',
         'sla_response_breached' => 'boolean',
         'sla_resolution_breached' => 'boolean',
+        'is_merged' => 'boolean',
     ];
 
     protected static function boot()
@@ -108,6 +115,21 @@ class Ticket extends Model
         return $this->belongsTo(SLA::class);
     }
 
+    public function mergedInto()
+    {
+        return $this->belongsTo(Ticket::class, 'merged_into_id', 'uuid');
+    }
+
+    public function mergedTickets()
+    {
+        return $this->hasMany(Ticket::class, 'merged_into_id', 'uuid');
+    }
+
+    public function mergedBy()
+    {
+        return $this->belongsTo(User::class, 'merged_by_id');
+    }
+
     public function getRouteKeyName()
     {
         return 'uuid';
@@ -171,6 +193,69 @@ class Ticket extends Model
         }
 
         return $diff.' minutes remaining';
+    }
+
+    /**
+     * Scope to exclude merged tickets
+     */
+    public function scopeNotMerged($query)
+    {
+        return $query->where('is_merged', false);
+    }
+
+    /**
+     * Scope to get only merged tickets
+     */
+    public function scopeMerged($query)
+    {
+        return $query->where('is_merged', true);
+    }
+
+    /**
+     * Check if this ticket can be merged into another
+     */
+    public function canBeMergedInto(Ticket $targetTicket): bool
+    {
+        // Cannot merge into itself
+        if ($this->uuid === $targetTicket->uuid) {
+            return false;
+        }
+
+        // Cannot merge if already merged
+        if ($this->is_merged || $targetTicket->is_merged) {
+            return false;
+        }
+
+        // Cannot merge if tickets are in different offices (unless admin override)
+        if ($this->office_id !== $targetTicket->office_id) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get all tickets that were merged into this one
+     */
+    public function getAllMergedTickets()
+    {
+        return $this->mergedTickets()->with(['creator', 'replies.user', 'timeline.user'])->get();
+    }
+
+    /**
+     * Check if this ticket has any merged tickets
+     */
+    public function hasMergedTickets(): bool
+    {
+        return $this->mergedTickets()->exists();
+    }
+
+    /**
+     * Get the count of merged tickets
+     */
+    public function getMergedTicketsCount(): int
+    {
+        return $this->mergedTickets()->count();
     }
 
     /**

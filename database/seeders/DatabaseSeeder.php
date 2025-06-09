@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             OfficeSeeder::class,
             AdminUserSeeder::class,
             FAQSeeder::class,
+            EmailTemplateSeeder::class,
         ]);
     }
 }
