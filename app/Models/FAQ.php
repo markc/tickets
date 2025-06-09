@@ -10,6 +10,8 @@ class FAQ extends Model
 {
     use HasFactory, Searchable;
 
+    protected $table = 'f_a_q_s';
+
     protected $fillable = [
         'question',
         'answer',
@@ -25,6 +27,11 @@ class FAQ extends Model
     public function office()
     {
         return $this->belongsTo(Office::class);
+    }
+
+    public function usageTracking()
+    {
+        return $this->hasMany(FAQUsageTracking::class, 'faq_id');
     }
 
     public function scopePublished($query)
@@ -48,7 +55,6 @@ class FAQ extends Model
             'id' => $this->id,
             'question' => $this->question,
             'answer' => strip_tags($this->answer),
-            'office_name' => $this->office?->name,
             'is_published' => $this->is_published,
         ];
     }

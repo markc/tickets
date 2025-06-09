@@ -60,6 +60,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/tickets/{ticket}/merge/search', [\App\Http\Controllers\TicketMergeController::class, 'search'])->name('tickets.merge.search');
     Route::get('/tickets/{ticket}/merge/preview', [\App\Http\Controllers\TicketMergeController::class, 'preview'])->name('tickets.merge.preview');
     Route::post('/tickets/{ticket}/merge', [\App\Http\Controllers\TicketMergeController::class, 'merge'])->name('tickets.merge');
+
+    // Knowledge Base / FAQ Integration routes
+    Route::prefix('api/knowledge-base')->group(function () {
+        Route::get('/search', [\App\Http\Controllers\KnowledgeBaseController::class, 'search'])->name('api.knowledge-base.search');
+        Route::get('/trending', [\App\Http\Controllers\KnowledgeBaseController::class, 'trending'])->name('api.knowledge-base.trending');
+        Route::get('/analytics', [\App\Http\Controllers\KnowledgeBaseController::class, 'analytics'])->name('api.knowledge-base.analytics');
+        Route::get('/tickets/{ticket}/suggestions', [\App\Http\Controllers\KnowledgeBaseController::class, 'getSuggestions'])->name('api.knowledge-base.suggestions');
+        Route::get('/faqs/{faq}', [\App\Http\Controllers\KnowledgeBaseController::class, 'show'])->name('api.knowledge-base.faq.show');
+        Route::post('/faqs/{faq}/format', [\App\Http\Controllers\KnowledgeBaseController::class, 'format'])->name('api.knowledge-base.faq.format');
+        Route::post('/faqs/{faq}/track-usage', [\App\Http\Controllers\KnowledgeBaseController::class, 'trackUsage'])->name('api.knowledge-base.faq.track-usage');
+    });
 });
 
 require __DIR__.'/auth.php';
