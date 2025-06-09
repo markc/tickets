@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 
 class TicketAssignmentService
 {
-    public function autoAssignTicket(Ticket $ticket): void
+    public function autoAssignTicket(Ticket $ticket): ?User
     {
         $office = $ticket->office;
 
@@ -18,14 +18,17 @@ class TicketAssignmentService
             ->get();
 
         if ($availableAgents->isEmpty()) {
-            return;
+            return null;
         }
 
         $selectedAgent = $this->selectAgentRoundRobin($office->id, $availableAgents);
 
         if ($selectedAgent) {
             $this->assignTicketToAgent($ticket, $selectedAgent);
+            return $selectedAgent;
         }
+
+        return null;
     }
 
     private function selectAgentRoundRobin(int $officeId, $agents): ?User
@@ -68,7 +71,7 @@ class TicketAssignmentService
         ]);
     }
 
-    public function reassignTicket(Ticket $ticket, User $newAgent): void
+    public function reassignTicket(Ticket $ticket, User $newAgent, ?User $assigner = null): void
     {
         $oldAgent = $ticket->assignedTo;
 
@@ -80,7 +83,7 @@ class TicketAssignmentService
 
         TicketTimeline::create([
             'ticket_id' => $ticket->id,
-            'user_id' => auth()->id(),
+            'user_id' => $assigner ? $assigner->id : $newAgent->id,
             'entry' => $description,
         ]);
     }

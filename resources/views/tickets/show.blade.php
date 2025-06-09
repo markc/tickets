@@ -407,11 +407,11 @@
                         @csrf
 
                         <div class="mb-4">
-                            <x-input-label for="message" :value="__('Message')" />
-                            <textarea id="message" name="message" rows="4" 
+                            <x-input-label for="content" :value="__('Message')" />
+                            <textarea id="content" name="content" rows="4" 
                                      class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
-                                     required>{{ old('message') }}</textarea>
-                            <x-input-error :messages="$errors->get('message')" class="mt-2" />
+                                     required>{{ old('content') }}</textarea>
+                            <x-input-error :messages="$errors->get('content')" class="mt-2" />
                         </div>
 
                         @if(!auth()->user()->isCustomer())
@@ -457,7 +457,7 @@
                                     <div class="min-w-0 flex-1">
                                         <p class="text-sm text-gray-900">
                                             <span class="font-medium">{{ $event->user->name }}</span>
-                                            {{ $event->description }}
+                                            {{ $event->entry }}
                                         </p>
                                         <p class="text-xs text-gray-500">{{ $event->created_at->format('M j, Y \a\t g:i A') }}</p>
                                     </div>
@@ -607,7 +607,7 @@
 
             function insertCannedResponse() {
                 if (selectedResponse) {
-                    const messageTextarea = document.getElementById('message');
+                    const messageTextarea = document.getElementById('content');
                     const currentContent = messageTextarea.value;
                     const newContent = currentContent ? currentContent + '\n\n' + selectedResponse.content : selectedResponse.content;
                     messageTextarea.value = newContent;
@@ -797,7 +797,7 @@
                     const data = await response.json();
                     
                     // Insert formatted content into message textarea
-                    const messageTextarea = document.getElementById('message');
+                    const messageTextarea = document.getElementById('content');
                     const currentContent = messageTextarea.value;
                     const newContent = currentContent ? currentContent + '\n\n' + data.data.formatted_content : data.data.formatted_content;
                     messageTextarea.value = newContent;

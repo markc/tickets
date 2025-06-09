@@ -33,7 +33,9 @@ class EmailTicketService
         try {
             $user = $this->findOrCreateUser($fromEmail, $fromName);
             $defaultOffice = $this->getDefaultOffice();
-            $defaultStatus = TicketStatus::where('is_default', true)->first();
+            $defaultStatus = TicketStatus::where('is_default', true)->first() 
+                ?? TicketStatus::where('name', 'Open')->first() 
+                ?? TicketStatus::first();
             $defaultPriority = $this->getDefaultPriority();
 
             $ticket = Ticket::create([
@@ -51,8 +53,7 @@ class EmailTicketService
             TicketTimeline::create([
                 'ticket_id' => $ticket->id,
                 'user_id' => $user->id,
-                'action' => 'created',
-                'description' => 'Ticket created via email',
+                'entry' => 'Ticket created via email',
             ]);
 
             $this->assignmentService->autoAssignTicket($ticket);
@@ -115,7 +116,8 @@ class EmailTicketService
             $reply = TicketReply::create([
                 'ticket_id' => $ticket->id,
                 'user_id' => $user->id,
-                'message' => $content,
+                'content' => $content,
+                'is_internal' => false,
             ]);
 
             $this->processAttachments($attachments, $reply);
@@ -123,8 +125,7 @@ class EmailTicketService
             TicketTimeline::create([
                 'ticket_id' => $ticket->id,
                 'user_id' => $user->id,
-                'action' => 'replied',
-                'description' => 'Reply added via email',
+                'entry' => 'Reply added via email',
             ]);
 
             $this->reopenTicketIfClosed($ticket, $user);
@@ -151,7 +152,43 @@ class EmailTicketService
         }
     }
 
-    private function findOrCreateUser(string $email, string $name): User
+    public function extractUuidFromEmail(string $email): ?string
+    {
+        // Extract UUID from emails like support+uuid@domain.com
+        if (preg_match('/support\+([a-f0-9\-]{36})@/i', $email, $matches)) {
+            return $matches[1];
+        }
+        
+        return null;
+    }
+
+    public function determineOfficeFromEmail(string $email, string $subject): ?Office
+    {
+        // Check for office-specific email addresses
+        if (str_contains($email, 'billing@')) {
+            return Office::where('name', 'Sales')->first(); // Use Sales for billing
+        }
+        
+        if (str_contains($email, 'technical@') || str_contains($email, 'tech@')) {
+            return Office::where('name', 'Technical Support')->first();
+        }
+        
+        // Check subject for keywords
+        $subject = strtolower($subject);
+        
+        if (str_contains($subject, 'billing') || str_contains($subject, 'invoice') || str_contains($subject, 'payment')) {
+            return Office::where('name', 'Sales')->first(); // Use Sales for billing
+        }
+        
+        if (str_contains($subject, 'server') || str_contains($subject, 'technical') || str_contains($subject, 'error') || str_contains($subject, 'bug')) {
+            return Office::where('name', 'Technical Support')->first();
+        }
+        
+        // Default to Customer Service
+        return Office::where('name', 'Customer Service')->first();
+    }
+
+    public function findOrCreateUser(string $email, string $name): User
     {
         $user = User::where('email', $email)->first();
 
@@ -246,7 +283,9 @@ class EmailTicketService
     private function reopenTicketIfClosed(Ticket $ticket, User $user): void
     {
         $closedStatus = TicketStatus::where('name', 'Closed')->first();
-        $openStatus = TicketStatus::where('is_default', true)->first();
+        $openStatus = TicketStatus::where('is_default', true)->first()
+            ?? TicketStatus::where('name', 'Open')->first() 
+            ?? TicketStatus::first();
 
         if ($closedStatus && $openStatus && $ticket->ticket_status_id === $closedStatus->id && $user->isCustomer()) {
             $ticket->update(['ticket_status_id' => $openStatus->id]);
@@ -254,8 +293,7 @@ class EmailTicketService
             TicketTimeline::create([
                 'ticket_id' => $ticket->id,
                 'user_id' => $user->id,
-                'action' => 'reopened',
-                'description' => 'Ticket reopened via email reply',
+                'entry' => 'Ticket reopened via email reply',
             ]);
         }
     }

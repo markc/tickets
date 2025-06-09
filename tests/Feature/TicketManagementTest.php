@@ -8,6 +8,7 @@ use App\Models\TicketPriority;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -18,6 +19,9 @@ class TicketManagementTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        
+        // Fake notifications to prevent email sending issues in tests
+        Notification::fake();
 
         // Seed necessary data
         $this->seed(\Database\Seeders\TicketStatusSeeder::class);
@@ -40,7 +44,7 @@ class TicketManagementTest extends TestCase
                 'office_id' => $office->id,
                 'ticket_priority_id' => $priority->id,
                 'attachments' => [
-                    UploadedFile::fake()->image('test.jpg', 100, 100),
+                    UploadedFile::fake()->create('test.pdf', 100, 'application/pdf'),
                 ],
             ]);
 
@@ -57,7 +61,7 @@ class TicketManagementTest extends TestCase
 
         $ticket = Ticket::where('subject', 'Test Ticket')->first();
         $this->assertCount(1, $ticket->attachments);
-        Storage::disk('public')->assertExists($ticket->attachments->first()->file_path);
+        Storage::disk('public')->assertExists($ticket->attachments->first()->path);
     }
 
     public function test_customer_can_view_own_tickets()
@@ -91,6 +95,9 @@ class TicketManagementTest extends TestCase
         $agent = User::factory()->create(['role' => 'agent']);
         $customer = User::factory()->create(['role' => 'customer']);
         $ticket = Ticket::factory()->create(['creator_id' => $customer->id]);
+        
+        // Associate agent with ticket's office so they can view it
+        $agent->offices()->attach($ticket->office_id);
 
         $response = $this->actingAs($agent)->get("/tickets/{$ticket->uuid}");
 
@@ -109,7 +116,7 @@ class TicketManagementTest extends TestCase
             ->post("/tickets/{$ticket->uuid}/reply", [
                 'content' => 'This is a reply',
                 'attachments' => [
-                    UploadedFile::fake()->document('reply.pdf', 100),
+                    UploadedFile::fake()->create('reply.pdf', 100),
                 ],
             ]);
 
@@ -146,7 +153,7 @@ class TicketManagementTest extends TestCase
         $this->assertDatabaseHas('ticket_timelines', [
             'ticket_id' => $ticket->id,
             'user_id' => $customer->id,
-            'action' => 'created',
+            'entry' => 'Ticket created',
         ]);
 
         // Customer adds reply
@@ -158,7 +165,7 @@ class TicketManagementTest extends TestCase
         $this->assertDatabaseHas('ticket_timelines', [
             'ticket_id' => $ticket->id,
             'user_id' => $customer->id,
-            'action' => 'replied',
+            'entry' => 'Added a reply',
         ]);
     }
 

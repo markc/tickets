@@ -30,18 +30,42 @@ class KnowledgeBaseService
             }
 
             // Search FAQs using keywords
-            $suggestions = FAQ::search($this->buildSearchQuery($keywords))
-                ->where('is_published', true)
-                ->get()
-                ->filter(function ($faq) use ($ticket) {
-                    // Only show FAQs from same office or global FAQs (office_id = null)
-                    return $faq->office_id === $ticket->office_id || $faq->office_id === null;
+            try {
+                $suggestions = FAQ::search($this->buildSearchQuery($keywords))
+                    ->get()
+                    ->filter(function ($faq) use ($ticket) {
+                        // Only show published FAQs from same office or global FAQs (office_id = null)
+                        return $faq->is_published && 
+                               ($faq->office_id === $ticket->office_id || $faq->office_id === null);
+                    })
+                    ->sortByDesc(function ($faq) use ($keywords) {
+                        return $this->calculateRelevanceScore($faq, $keywords);
+                    })
+                    ->take($limit)
+                    ->values();
+            } catch (\Exception $e) {
+                // Fallback: use regular database queries if search fails
+                $suggestions = collect();
+            }
+
+            // If no suggestions found, fallback to manual keyword matching
+            if ($suggestions->isEmpty()) {
+                $allFaqs = FAQ::published()
+                    ->where(function ($q) use ($ticket) {
+                        $q->where('office_id', $ticket->office_id)
+                          ->orWhereNull('office_id');
+                    })
+                    ->get();
+
+                $suggestions = $allFaqs->filter(function ($faq) use ($keywords) {
+                    return $this->calculateRelevanceScore($faq, $keywords) > 0;
                 })
                 ->sortByDesc(function ($faq) use ($keywords) {
                     return $this->calculateRelevanceScore($faq, $keywords);
                 })
                 ->take($limit)
                 ->values();
+            }
 
             return $suggestions;
         });
@@ -53,12 +77,16 @@ class KnowledgeBaseService
     public function searchFAQs(string $query, ?int $officeId = null, int $limit = 10): Collection
     {
         $searchResults = FAQ::search($query)
-            ->where('is_published', true)
             ->get();
 
         return $searchResults->filter(function ($faq) use ($officeId) {
+            // Only show published FAQs
+            if (!$faq->is_published) {
+                return false;
+            }
+            
             if ($officeId === null) {
-                return true; // Show all if no office filter
+                return true; // Show all published if no office filter
             }
 
             // Show FAQs from the specified office or global FAQs

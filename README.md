@@ -1,6 +1,7 @@
 # TIKM (Ticket Manager)
 
 [![Code Quality](https://github.com/markc/tikm/workflows/Code%20Quality/badge.svg)](https://github.com/markc/tikm/actions)
+[![Tests](https://github.com/markc/tikm/workflows/Tests/badge.svg)](https://github.com/markc/tikm/actions)
 
 A simple customer support system built with Laravel 12, Filament 3.3 and Claude Code, featuring email-to-ticket integration, role-based access control, and a complete support workflow.
 

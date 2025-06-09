@@ -42,7 +42,9 @@ class TicketController extends Controller
     {
         $validated = $request->validated();
 
-        $defaultStatus = TicketStatus::where('is_default', true)->first();
+        $defaultStatus = TicketStatus::where('is_default', true)->first() 
+            ?? TicketStatus::where('name', 'Open')->first() 
+            ?? TicketStatus::first();
 
         $ticket = Ticket::create([
             'uuid' => Str::uuid(),
@@ -63,7 +65,6 @@ class TicketController extends Controller
                     'attachable_id' => $ticket->id,
                     'filename' => $file->getClientOriginalName(),
                     'path' => $path,
-                    'size' => $file->getSize(),
                     'mime_type' => $file->getMimeType(),
                 ]);
             }
@@ -72,8 +73,7 @@ class TicketController extends Controller
         TicketTimeline::create([
             'ticket_id' => $ticket->id,
             'user_id' => auth()->id(),
-            'action' => 'created',
-            'description' => 'Ticket created',
+            'entry' => 'Ticket created',
         ]);
 
         $assignmentService = new TicketAssignmentService;
@@ -126,7 +126,7 @@ class TicketController extends Controller
         $this->authorize('view', $ticket);
 
         $validated = $request->validate([
-            'message' => 'required|string',
+            'content' => 'required|string',
             'is_internal' => 'boolean',
             'attachments.*' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,pdf,doc,docx,txt',
         ]);
@@ -140,7 +140,7 @@ class TicketController extends Controller
         $reply = TicketReply::create([
             'ticket_id' => $ticket->id,
             'user_id' => auth()->id(),
-            'content' => $validated['message'],
+            'content' => $validated['content'],
             'is_internal' => $isInternal,
         ]);
 
@@ -163,7 +163,6 @@ class TicketController extends Controller
                     'attachable_id' => $reply->id,
                     'filename' => $file->getClientOriginalName(),
                     'path' => $path,
-                    'size' => $file->getSize(),
                     'mime_type' => $file->getMimeType(),
                 ]);
             }

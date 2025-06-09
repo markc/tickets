@@ -15,6 +15,9 @@ beforeEach(function () {
     $this->customer = User::factory()->create(['role' => 'customer']);
 
     $this->office = Office::factory()->create(['name' => 'Technical Support']);
+    
+    // Associate agent with office so they can view tickets
+    $this->agent->offices()->attach($this->office);
 
     $this->ticket = Ticket::factory()->create([
         'creator_id' => $this->customer->id,
@@ -31,8 +34,8 @@ beforeEach(function () {
     ]);
 
     $this->faq2 = FAQ::factory()->create([
-        'question' => 'What are the system requirements?',
-        'answer' => 'The system requires PHP 8.3+, MySQL 8.0+, and at least 4GB RAM.',
+        'question' => 'How to change your password?',
+        'answer' => 'To change your password, go to your profile settings and update your credentials.',
         'office_id' => null, // Global FAQ
         'is_published' => true,
     ]);

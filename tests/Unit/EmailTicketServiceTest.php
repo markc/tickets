@@ -125,16 +125,16 @@ class EmailTicketServiceTest extends TestCase
 
     public function test_determine_office_from_email()
     {
-        $billing = Office::where('name', 'Billing')->first();
+        $sales = Office::where('name', 'Sales')->first();
         $technical = Office::where('name', 'Technical Support')->first();
-        $general = Office::where('name', 'General Support')->first();
+        $customerService = Office::where('name', 'Customer Service')->first();
 
         $office1 = $this->service->determineOfficeFromEmail('billing@tikm.com', 'Invoice question');
         $office2 = $this->service->determineOfficeFromEmail('support@tikm.com', 'Server error help');
         $office3 = $this->service->determineOfficeFromEmail('support@tikm.com', 'General inquiry');
 
-        $this->assertEquals($billing->id, $office1->id);
+        $this->assertEquals($sales->id, $office1->id);
         $this->assertEquals($technical->id, $office2->id);
-        $this->assertEquals($general->id, $office3->id);
+        $this->assertEquals($customerService->id, $office3->id);
     }
 }

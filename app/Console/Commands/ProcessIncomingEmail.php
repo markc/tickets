@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Services\EmailTicketService;
 use Exception;
 use Illuminate\Console\Command;
-use PhpMimeMailParser\Parser;
+use eXorus\PhpMimeMailParser\Parser;
 
 class ProcessIncomingEmail extends Command
 {

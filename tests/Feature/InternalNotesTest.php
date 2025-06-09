@@ -45,7 +45,7 @@ class InternalNotesTest extends TestCase
 
         $this->actingAs($agent)
             ->post(route('tickets.reply', $ticket->uuid), [
-                'message' => 'This is an internal note',
+                'content' => 'This is an internal note',
                 'is_internal' => true,
             ])
             ->assertRedirect()
@@ -75,7 +75,7 @@ class InternalNotesTest extends TestCase
 
         $this->actingAs($customer)
             ->post(route('tickets.reply', $ticket->uuid), [
-                'message' => 'This should not be internal',
+                'content' => 'This should not be internal',
                 'is_internal' => true,
             ])
             ->assertRedirect()

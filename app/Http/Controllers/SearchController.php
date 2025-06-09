@@ -79,6 +79,44 @@ class SearchController extends Controller
         // Start with Scout search if query is provided
         if (! empty(trim($query))) {
             try {
+                // For collection driver, get all results and paginate manually
+                if (config('scout.driver') === 'collection') {
+                    $allResults = Ticket::search($query)->get();
+                    
+                    // Load relationships for filtering
+                    $allResults->load(['creator', 'assignedTo', 'office', 'status', 'priority']);
+                    
+                    // Apply authorization filters
+                    $filteredResults = $this->applyAuthorizationToCollection($allResults);
+                    
+                    // Apply additional filters
+                    $filteredResults = $this->applyFiltersToCollection($filteredResults, $filters);
+                    
+                    // Sort results
+                    if ($sortBy !== 'relevance') {
+                        $filteredResults = $filteredResults->sortBy($sortBy, SORT_REGULAR, $sortOrder === 'desc');
+                    }
+                    
+                    // Manual pagination
+                    $page = request()->input('page', 1);
+                    $perPage = 10;
+                    $offset = ($page - 1) * $perPage;
+                    
+                    $paginatedItems = $filteredResults->slice($offset, $perPage)->values();
+                    $total = $filteredResults->count();
+                    
+                    return new \Illuminate\Pagination\LengthAwarePaginator(
+                        $paginatedItems,
+                        $total,
+                        $perPage,
+                        $page,
+                        [
+                            'path' => request()->url(),
+                            'pageName' => 'page',
+                        ]
+                    );
+                }
+                
                 $ticketQuery = Ticket::search($query)->query(function ($builder) use ($filters, $sortBy, $sortOrder) {
                     return $this->applyTicketFilters($builder, $filters, $sortBy, $sortOrder);
                 });
@@ -124,7 +162,8 @@ class SearchController extends Controller
 
         // Paginate and load relationships
         if (is_object($ticketQuery) && method_exists($ticketQuery, 'paginate')) {
-            $results = $ticketQuery->paginate(10);
+            // For Scout search results, use paginate() method
+            $results = $ticketQuery->paginate(10, 'page', request()->input('page', 1));
 
             // Load relationships after paginating for Scout results
             if (method_exists($ticketQuery, 'query')) {
@@ -330,5 +369,69 @@ class SearchController extends Controller
                 ];
             }),
         ]);
+    }
+
+    private function applyAuthorizationToCollection($tickets)
+    {
+        return $tickets->filter(function ($ticket) {
+            if (Auth::user()->isAdmin()) {
+                return true;
+            }
+            
+            if (Auth::user()->isAgent()) {
+                $userOfficeIds = Auth::user()->offices->pluck('id')->toArray();
+                return in_array($ticket->office_id, $userOfficeIds) || $ticket->assigned_to_id === Auth::id();
+            }
+            
+            // Customer can only see their own tickets
+            return $ticket->creator_id === Auth::id();
+        });
+    }
+
+    private function applyFiltersToCollection($tickets, array $filters)
+    {
+        return $tickets->filter(function ($ticket) use ($filters) {
+            // Status filter
+            if (!empty($filters['status'])) {
+                if (!in_array($ticket->status->name ?? '', $filters['status'])) {
+                    return false;
+                }
+            }
+
+            // Priority filter
+            if (!empty($filters['priority'])) {
+                if (!in_array($ticket->priority->name ?? '', $filters['priority'])) {
+                    return false;
+                }
+            }
+
+            // Office filter
+            if (!empty($filters['office'])) {
+                if (!in_array($ticket->office_id, $filters['office'])) {
+                    return false;
+                }
+            }
+
+            // Assignee filter
+            if (!empty($filters['assignee'])) {
+                if (!in_array($ticket->assigned_to_id, $filters['assignee'])) {
+                    return false;
+                }
+            }
+
+            // Date range filters
+            if (!empty($filters['date_from'])) {
+                if ($ticket->created_at < $filters['date_from'] . ' 00:00:00') {
+                    return false;
+                }
+            }
+            if (!empty($filters['date_to'])) {
+                if ($ticket->created_at > $filters['date_to'] . ' 23:59:59') {
+                    return false;
+                }
+            }
+
+            return true;
+        });
     }
 }

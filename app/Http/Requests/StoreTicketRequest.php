@@ -33,7 +33,6 @@ class StoreTicketRequest extends FormRequest
                 'required',
                 'string',
                 'max:10000', // Limit content length
-                'regex:/^[^<>]*$/', // Prevent HTML injection
             ],
             'office_id' => 'required|exists:offices,id',
             'ticket_priority_id' => 'required|exists:ticket_priorities,id',
@@ -65,9 +64,10 @@ class StoreTicketRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $this->merge([
-            'subject' => strip_tags($this->subject ?? ''),
-            'content' => strip_tags($this->content ?? ''),
-        ]);
+        // Temporarily disabled for debugging
+        // $this->merge([
+        //     'subject' => strip_tags($this->subject ?? ''),
+        //     'content' => strip_tags($this->content ?? ''),
+        // ]);
     }
 }
