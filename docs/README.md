@@ -74,6 +74,7 @@ This documentation is organized as a comprehensive guide, taking you from initia
 
 #### Chapter 6: Technical Reference
 - [🔧 API_REFERENCE.md](API_REFERENCE.md) - Complete technical documentation
+- [⚡ ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Advanced features guide and usage
 - [📋 TICKETING_SYSTEM.md](TICKETING_SYSTEM.md) - Original system requirements
 - [Database Schema](#database-schema)
 - [Service Architecture](#service-architecture)
@@ -375,8 +376,9 @@ Ready to dive deeper? Choose your path:
 
 ### **🛠️ Developers**
 1. **Technical Deep Dive**: [API_REFERENCE.md](API_REFERENCE.md) - Complete technical documentation
-2. **System Requirements**: [TICKETING_SYSTEM.md](TICKETING_SYSTEM.md) - Original specifications
-3. **Development Setup**: Follow the [development commands](#development-commands) above
+2. **Advanced Features**: [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Search, avatars, security, SLA, and more
+3. **System Requirements**: [TICKETING_SYSTEM.md](TICKETING_SYSTEM.md) - Original specifications
+4. **Development Setup**: Follow the [development commands](#development-commands) above
 
 ### **🔧 Administrators**
 1. **Admin Guide**: [USER_GUIDE.md](USER_GUIDE.md#admin-guide) - System administration

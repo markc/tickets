@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTicketRequest;
 use App\Models\Attachment;
 use App\Models\Office;
 use App\Models\Ticket;
@@ -36,15 +37,9 @@ class TicketController extends Controller
         return view('tickets.create', compact('offices', 'priorities'));
     }
 
-    public function store(Request $request)
+    public function store(StoreTicketRequest $request)
     {
-        $validated = $request->validate([
-            'subject' => 'required|string|max:255',
-            'content' => 'required|string',
-            'office_id' => 'required|exists:offices,id',
-            'ticket_priority_id' => 'required|exists:ticket_priorities,id',
-            'attachments.*' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,pdf,doc,docx,txt',
-        ]);
+        $validated = $request->validated();
 
         $defaultStatus = TicketStatus::where('is_default', true)->first();
 
@@ -93,17 +88,34 @@ class TicketController extends Controller
     {
         $this->authorize('view', $ticket);
 
-        $ticket->load([
-            'status',
-            'priority',
-            'office',
-            'creator',
-            'assignedTo',
-            'replies.user',
-            'replies.attachments',
-            'attachments',
-            'timeline.user',
-        ]);
+        // Load relationships based on user role
+        if (auth()->user()->isCustomer()) {
+            // Customers only see public replies
+            $ticket->load([
+                'status',
+                'priority',
+                'office',
+                'creator',
+                'assignedTo',
+                'publicReplies.user',
+                'publicReplies.attachments',
+                'attachments',
+                'timeline.user',
+            ]);
+        } else {
+            // Agents and admins see all replies including internal notes
+            $ticket->load([
+                'status',
+                'priority',
+                'office',
+                'creator',
+                'assignedTo',
+                'replies.user',
+                'replies.attachments',
+                'attachments',
+                'timeline.user',
+            ]);
+        }
 
         return view('tickets.show', compact('ticket'));
     }
@@ -114,14 +126,32 @@ class TicketController extends Controller
 
         $validated = $request->validate([
             'message' => 'required|string',
+            'is_internal' => 'boolean',
             'attachments.*' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,pdf,doc,docx,txt',
         ]);
+
+        // Only agents and admins can create internal notes
+        $isInternal = $validated['is_internal'] ?? false;
+        if ($isInternal && auth()->user()->isCustomer()) {
+            $isInternal = false;
+        }
 
         $reply = TicketReply::create([
             'ticket_id' => $ticket->id,
             'user_id' => auth()->id(),
-            'message' => $validated['message'],
+            'content' => $validated['message'],
+            'is_internal' => $isInternal,
         ]);
+
+        // Update first response time if this is the first agent/admin response
+        if (! $isInternal && ! auth()->user()->isCustomer() && ! $ticket->first_response_at) {
+            $ticket->update(['first_response_at' => now()]);
+        }
+
+        // Mark ticket as resolved if status is set to closed
+        if ($ticket->status->name === 'Closed' && ! $ticket->resolved_at) {
+            $ticket->update(['resolved_at' => now()]);
+        }
 
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
@@ -141,11 +171,13 @@ class TicketController extends Controller
         TicketTimeline::create([
             'ticket_id' => $ticket->id,
             'user_id' => auth()->id(),
-            'action' => 'replied',
-            'description' => 'Added a reply',
+            'entry' => $isInternal ? 'Added an internal note' : 'Added a reply',
         ]);
 
-        $this->sendReplyNotifications($ticket, $reply);
+        // Only send notifications for public replies, not internal notes
+        if (! $isInternal) {
+            $this->sendReplyNotifications($ticket, $reply);
+        }
 
         return back()->with('success', 'Reply added successfully!');
     }

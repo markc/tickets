@@ -4,6 +4,7 @@ namespace App\Filament\Resources\TicketResource\Pages;
 
 use App\Filament\Resources\TicketResource;
 use App\Models\TicketPriority;
+use App\Models\TicketReply;
 use App\Models\TicketStatus;
 use App\Models\TicketTimeline;
 use App\Models\User;
@@ -18,6 +19,20 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewTicket extends ViewRecord
 {
     protected static string $resource = TicketResource::class;
+
+    protected function resolveRecord($key): \Illuminate\Database\Eloquent\Model
+    {
+        return parent::resolveRecord($key)->load([
+            'status',
+            'priority',
+            'office',
+            'creator',
+            'assignedTo',
+            'timeline.user',
+            'replies.user',
+            'attachments',
+        ]);
+    }
 
     protected function getHeaderActions(): array
     {
@@ -113,6 +128,38 @@ class ViewTicket extends ViewRecord
                     $this->redirect($this->getResource()::getUrl('index'));
                 }),
 
+            Actions\Action::make('addInternalNote')
+                ->label('Add Internal Note')
+                ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                ->color('warning')
+                ->form([
+                    Forms\Components\Textarea::make('message')
+                        ->label('Internal Note')
+                        ->required()
+                        ->rows(4),
+                ])
+                ->action(function (array $data): void {
+                    TicketReply::create([
+                        'ticket_id' => $this->record->id,
+                        'user_id' => auth()->id(),
+                        'content' => $data['message'],
+                        'is_internal' => true,
+                    ]);
+
+                    TicketTimeline::create([
+                        'ticket_id' => $this->record->id,
+                        'user_id' => auth()->id(),
+                        'entry' => 'Added an internal note',
+                    ]);
+
+                    Notification::make()
+                        ->title('Internal note added')
+                        ->success()
+                        ->send();
+
+                    $this->redirect($this->getResource()::getUrl('view', ['record' => $this->record]));
+                }),
+
             Actions\EditAction::make()
                 ->successRedirectUrl($this->getResource()::getUrl('index')),
         ];
@@ -181,13 +228,13 @@ class ViewTicket extends ViewRecord
                                 });
 
                                 $this->record->replies()->with('user')->get()->each(function ($reply) use (&$timeline) {
-                                    if (! $reply->is_internal_note || auth()->user()->role !== 'customer') {
+                                    if (! $reply->is_internal || auth()->user()->role !== 'customer') {
                                         $timeline->push([
                                             'type' => 'reply',
                                             'created_at' => $reply->created_at,
                                             'content' => $reply->content,
                                             'user' => $reply->user,
-                                            'is_internal_note' => $reply->is_internal_note,
+                                            'is_internal' => $reply->is_internal,
                                         ]);
                                     }
                                 });
@@ -199,7 +246,7 @@ class ViewTicket extends ViewRecord
                                     $user = $item['user']?->name ?? 'System';
                                     $time = $item['created_at']->diffForHumans();
                                     $content = $item['content'];
-                                    $isInternal = $item['is_internal_note'] ?? false;
+                                    $isInternal = $item['is_internal'] ?? false;
 
                                     $badge = $isInternal ? '<span class="badge badge-warning">Internal Note</span>' : '';
 
