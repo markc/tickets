@@ -469,6 +469,12 @@
             let cannedResponses = [];
             let selectedResponse = null;
             let cannedResponsesVisible = false;
+            
+            // Knowledge Base variables
+            let faqSuggestions = [];
+            let selectedFAQ = null;
+            let knowledgeBaseVisible = false;
+            let currentKBTab = 'suggestions';
 
             // Knowledge Base variables
             let faqSuggestions = [];
