@@ -18,6 +18,8 @@ class TicketStatusResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
+    protected static ?int $navigationSort = 50;
+
     protected static ?string $modelLabel = 'Ticket Status';
 
     protected static ?string $pluralModelLabel = 'Ticket Statuses';

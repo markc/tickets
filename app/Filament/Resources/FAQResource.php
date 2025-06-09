@@ -19,7 +19,7 @@ class FAQResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?int $navigationSort = 50;
+    protected static ?int $navigationSort = 10;
 
     protected static ?string $modelLabel = 'FAQ';
 
