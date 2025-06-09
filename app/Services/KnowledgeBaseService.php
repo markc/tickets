@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\FAQ;
 use App\Models\Ticket;
-use App\Models\TicketReply;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -18,10 +17,10 @@ class KnowledgeBaseService
     public function getSuggestedFAQs(Ticket $ticket, int $limit = 5): Collection
     {
         $cacheKey = "faq_suggestions_ticket_{$ticket->id}";
-        
+
         return Cache::remember($cacheKey, 3600, function () use ($ticket, $limit) {
-            $keywords = $this->extractKeywords($ticket->subject . ' ' . $ticket->content);
-            
+            $keywords = $this->extractKeywords($ticket->subject.' '.$ticket->content);
+
             if (empty($keywords)) {
                 return FAQ::published()
                     ->where('office_id', $ticket->office_id)
@@ -29,7 +28,7 @@ class KnowledgeBaseService
                     ->limit($limit)
                     ->get();
             }
-            
+
             // Search FAQs using keywords
             $suggestions = FAQ::search($this->buildSearchQuery($keywords))
                 ->where('is_published', true)
@@ -43,11 +42,11 @@ class KnowledgeBaseService
                 })
                 ->take($limit)
                 ->values();
-                
+
             return $suggestions;
         });
     }
-    
+
     /**
      * Search FAQs with advanced filtering
      */
@@ -56,29 +55,29 @@ class KnowledgeBaseService
         $searchResults = FAQ::search($query)
             ->where('is_published', true)
             ->get();
-            
+
         return $searchResults->filter(function ($faq) use ($officeId) {
             if ($officeId === null) {
                 return true; // Show all if no office filter
             }
-            
+
             // Show FAQs from the specified office or global FAQs
             return $faq->office_id === $officeId || $faq->office_id === null;
         })
-        ->sortByDesc(function ($faq) use ($query) {
-            return $this->calculateSearchRelevance($faq, $query);
-        })
-        ->take($limit)
-        ->values();
+            ->sortByDesc(function ($faq) use ($query) {
+                return $this->calculateSearchRelevance($faq, $query);
+            })
+            ->take($limit)
+            ->values();
     }
-    
+
     /**
      * Get trending/popular FAQs
      */
     public function getTrendingFAQs(?int $officeId = null, int $limit = 5): Collection
     {
         $cacheKey = "trending_faqs_office_{$officeId}";
-        
+
         return Cache::remember($cacheKey, 1800, function () use ($officeId, $limit) {
             $query = FAQ::published()
                 ->withCount(['usageTracking as usage_count' => function ($q) {
@@ -86,18 +85,18 @@ class KnowledgeBaseService
                 }])
                 ->orderByDesc('usage_count')
                 ->ordered();
-                
+
             if ($officeId !== null) {
                 $query->where(function ($q) use ($officeId) {
                     $q->where('office_id', $officeId)
-                      ->orWhereNull('office_id');
+                        ->orWhereNull('office_id');
                 });
             }
-            
+
             return $query->limit($limit)->get();
         });
     }
-    
+
     /**
      * Track FAQ usage when inserted into ticket reply
      */
@@ -112,27 +111,27 @@ class KnowledgeBaseService
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-            
+
             // Invalidate relevant caches
             Cache::forget("faq_suggestions_ticket_{$ticket->id}");
             Cache::forget("trending_faqs_office_{$ticket->office_id}");
-            Cache::forget("trending_faqs_office_");
-            
+            Cache::forget('trending_faqs_office_');
+
         } catch (\Exception $e) {
-            Log::warning("Failed to track FAQ usage: " . $e->getMessage());
+            Log::warning('Failed to track FAQ usage: '.$e->getMessage());
         }
     }
-    
+
     /**
      * Get FAQ analytics for admin dashboard
      */
     public function getFAQAnalytics(int $days = 30): array
     {
         $cacheKey = "faq_analytics_{$days}";
-        
+
         return Cache::remember($cacheKey, 1800, function () use ($days) {
             $startDate = now()->subDays($days);
-            
+
             return [
                 'total_faqs' => FAQ::published()->count(),
                 'total_usage' => \DB::table('faq_usage_tracking')
@@ -145,7 +144,7 @@ class KnowledgeBaseService
             ];
         });
     }
-    
+
     /**
      * Get formatted FAQ content for insertion
      */
@@ -153,26 +152,26 @@ class KnowledgeBaseService
     {
         switch ($format) {
             case 'html':
-                return "<div class='faq-reference'>" .
-                       "<h4>{$faq->question}</h4>" .
-                       "<div>{$faq->answer}</div>" .
-                       "<small>Reference: FAQ #{$faq->id}</small>" .
-                       "</div>";
-                       
+                return "<div class='faq-reference'>".
+                       "<h4>{$faq->question}</h4>".
+                       "<div>{$faq->answer}</div>".
+                       "<small>Reference: FAQ #{$faq->id}</small>".
+                       '</div>';
+
             case 'plain':
-                return "--- FAQ Reference ---\n" .
-                       "Q: {$faq->question}\n" .
-                       "A: " . strip_tags($faq->answer) . "\n" .
-                       "Reference: FAQ #{$faq->id}\n" .
-                       "--- End FAQ ---";
-                       
+                return "--- FAQ Reference ---\n".
+                       "Q: {$faq->question}\n".
+                       'A: '.strip_tags($faq->answer)."\n".
+                       "Reference: FAQ #{$faq->id}\n".
+                       '--- End FAQ ---';
+
             default: // markdown
-                return "## {$faq->question}\n\n" .
-                       strip_tags($faq->answer) . "\n\n" .
+                return "## {$faq->question}\n\n".
+                       strip_tags($faq->answer)."\n\n".
                        "*Reference: FAQ #{$faq->id}*";
         }
     }
-    
+
     /**
      * Extract keywords from text content
      */
@@ -181,20 +180,20 @@ class KnowledgeBaseService
         // Remove HTML and special characters
         $text = strip_tags($text);
         $text = preg_replace('/[^\w\s]/', ' ', $text);
-        
+
         // Convert to lowercase and split into words
         $words = array_filter(
             explode(' ', strtolower($text)),
-            fn($word) => strlen($word) > 3 && !in_array($word, $this->getStopWords())
+            fn ($word) => strlen($word) > 3 && ! in_array($word, $this->getStopWords())
         );
-        
+
         // Get word frequency and return top keywords
         $wordCounts = array_count_values($words);
         arsort($wordCounts);
-        
+
         return array_keys(array_slice($wordCounts, 0, 10));
     }
-    
+
     /**
      * Build search query from keywords
      */
@@ -202,33 +201,33 @@ class KnowledgeBaseService
     {
         return implode(' ', array_slice($keywords, 0, 5));
     }
-    
+
     /**
      * Calculate relevance score between FAQ and keywords
      */
     private function calculateRelevanceScore(FAQ $faq, array $keywords): float
     {
-        $content = strtolower($faq->question . ' ' . strip_tags($faq->answer));
+        $content = strtolower($faq->question.' '.strip_tags($faq->answer));
         $score = 0;
-        
+
         foreach ($keywords as $index => $keyword) {
             $count = substr_count($content, strtolower($keyword));
             // Weight earlier keywords higher
             $weight = 1 / ($index + 1);
             $score += $count * $weight;
         }
-        
+
         return $score;
     }
-    
+
     /**
      * Calculate search relevance score
      */
     private function calculateSearchRelevance(FAQ $faq, string $query): float
     {
-        $content = strtolower($faq->question . ' ' . strip_tags($faq->answer));
+        $content = strtolower($faq->question.' '.strip_tags($faq->answer));
         $queryWords = array_filter(explode(' ', strtolower($query)));
-        
+
         $score = 0;
         foreach ($queryWords as $word) {
             if (strlen($word) > 2) {
@@ -238,10 +237,10 @@ class KnowledgeBaseService
                 $score += $questionScore + $answerScore;
             }
         }
-        
+
         return $score;
     }
-    
+
     /**
      * Get list of stop words to filter out
      */
@@ -257,7 +256,7 @@ class KnowledgeBaseService
             'how', 'what', 'when', 'where', 'why', 'which', 'who', 'there',
         ];
     }
-    
+
     /**
      * Get top FAQs by usage
      */
@@ -273,7 +272,7 @@ class KnowledgeBaseService
             ->limit(10)
             ->get();
     }
-    
+
     /**
      * Get usage statistics by office
      */
@@ -288,7 +287,7 @@ class KnowledgeBaseService
             ->orderByDesc('usage_count')
             ->get();
     }
-    
+
     /**
      * Get daily usage statistics
      */
@@ -301,7 +300,7 @@ class KnowledgeBaseService
             ->orderBy('date')
             ->get();
     }
-    
+
     /**
      * Calculate FAQ effectiveness rate
      */
@@ -310,12 +309,12 @@ class KnowledgeBaseService
         $totalTickets = \DB::table('tickets')
             ->where('created_at', '>=', now()->subDays($days))
             ->count();
-            
+
         $ticketsWithFAQUsage = \DB::table('faq_usage_tracking')
             ->distinct('ticket_id')
             ->where('created_at', '>=', now()->subDays($days))
             ->count();
-            
+
         return $totalTickets > 0 ? ($ticketsWithFAQUsage / $totalTickets) * 100 : 0;
     }
 }

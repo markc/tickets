@@ -24,12 +24,12 @@ class KnowledgeBaseController extends Controller
     public function getSuggestions(Request $request, Ticket $ticket): JsonResponse
     {
         // Check if user can view this ticket
-        if (!Gate::allows('view', $ticket)) {
+        if (! Gate::allows('view', $ticket)) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
         $request->validate([
-            'limit' => 'nullable|integer|min:1|max:20'
+            'limit' => 'nullable|integer|min:1|max:20',
         ]);
 
         $limit = $request->get('limit', 5);
@@ -58,7 +58,7 @@ class KnowledgeBaseController extends Controller
         $request->validate([
             'q' => 'required|string|max:255',
             'office_id' => 'nullable|integer|exists:offices,id',
-            'limit' => 'nullable|integer|min:1|max:50'
+            'limit' => 'nullable|integer|min:1|max:50',
         ]);
 
         $query = $request->get('q');
@@ -98,7 +98,7 @@ class KnowledgeBaseController extends Controller
     {
         $request->validate([
             'office_id' => 'nullable|integer|exists:offices,id',
-            'limit' => 'nullable|integer|min:1|max:20'
+            'limit' => 'nullable|integer|min:1|max:20',
         ]);
 
         $officeId = $request->get('office_id');
@@ -136,7 +136,7 @@ class KnowledgeBaseController extends Controller
     {
         $request->validate([
             'format' => 'nullable|in:markdown,html,plain',
-            'ticket_id' => 'required|uuid|exists:tickets,uuid'
+            'ticket_id' => 'required|uuid|exists:tickets,uuid',
         ]);
 
         $format = $request->get('format', 'markdown');
@@ -144,7 +144,7 @@ class KnowledgeBaseController extends Controller
         $ticket = Ticket::where('uuid', $ticketUuid)->firstOrFail();
 
         // Check if user can view this ticket
-        if (!Gate::allows('view', $ticket)) {
+        if (! Gate::allows('view', $ticket)) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -156,7 +156,7 @@ class KnowledgeBaseController extends Controller
                 'question' => $faq->question,
                 'formatted_content' => $formattedContent,
                 'format' => $format,
-            ]
+            ],
         ]);
     }
 
@@ -167,7 +167,7 @@ class KnowledgeBaseController extends Controller
     {
         $request->validate([
             'ticket_id' => 'required|uuid|exists:tickets,uuid',
-            'context' => 'nullable|in:reply_insertion,suggestion_view,search_result'
+            'context' => 'nullable|in:reply_insertion,suggestion_view,search_result',
         ]);
 
         $ticketUuid = $request->get('ticket_id');
@@ -175,7 +175,7 @@ class KnowledgeBaseController extends Controller
         $ticket = Ticket::where('uuid', $ticketUuid)->firstOrFail();
 
         // Check if user can view this ticket
-        if (!Gate::allows('view', $ticket)) {
+        if (! Gate::allows('view', $ticket)) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -183,7 +183,7 @@ class KnowledgeBaseController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'FAQ usage tracked successfully'
+            'message' => 'FAQ usage tracked successfully',
         ]);
     }
 
@@ -193,12 +193,12 @@ class KnowledgeBaseController extends Controller
     public function analytics(Request $request): JsonResponse
     {
         // Only admins can access analytics
-        if (!auth()->user()->isAdmin()) {
+        if (! auth()->user()->isAdmin()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
         $request->validate([
-            'days' => 'nullable|integer|min:1|max:365'
+            'days' => 'nullable|integer|min:1|max:365',
         ]);
 
         $days = $request->get('days', 30);
@@ -216,7 +216,7 @@ class KnowledgeBaseController extends Controller
     public function show(FAQ $faq): JsonResponse
     {
         // Check if FAQ is published or user is admin/agent
-        if (!$faq->is_published && auth()->user()->isCustomer()) {
+        if (! $faq->is_published && auth()->user()->isCustomer()) {
             return response()->json(['error' => 'FAQ not found'], 404);
         }
 
@@ -236,7 +236,7 @@ class KnowledgeBaseController extends Controller
                 'usage_count_30_days' => $usageCount,
                 'created_at' => $faq->created_at,
                 'updated_at' => $faq->updated_at,
-            ]
+            ],
         ]);
     }
 }
