@@ -17,9 +17,9 @@ class FAQResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
 
-    protected static ?string $navigationGroup = 'Support';
+    protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 50;
 
     protected static ?string $modelLabel = 'FAQ';
 
