@@ -78,9 +78,9 @@ class TicketMergeController extends Controller
     /**
      * Execute the merge
      */
-    public function merge(Request $request, Ticket $sourceTicket)
+    public function merge(Request $request, Ticket $ticket)
     {
-        $this->authorize('merge', $sourceTicket);
+        $this->authorize('merge', $ticket);
 
         $request->validate([
             'target_ticket_uuid' => 'required|string|exists:tickets,uuid',
@@ -90,18 +90,18 @@ class TicketMergeController extends Controller
         $targetTicket = Ticket::where('uuid', $request->target_ticket_uuid)->firstOrFail();
 
         // Verify user can merge these specific tickets
-        if (! $this->ticketMergeService->canUserMergeTickets(Auth::user(), $sourceTicket, $targetTicket)) {
+        if (! $this->ticketMergeService->canUserMergeTickets(Auth::user(), $ticket, $targetTicket)) {
             abort(403, 'You do not have permission to merge these tickets');
         }
 
         // Verify tickets can be merged
-        if (! $sourceTicket->canBeMergedInto($targetTicket)) {
+        if (! $ticket->canBeMergedInto($targetTicket)) {
             return back()->withErrors(['merge' => 'These tickets cannot be merged. They may be in different offices or already merged.']);
         }
 
         try {
             $this->ticketMergeService->mergeTickets(
-                $sourceTicket,
+                $ticket,
                 $targetTicket,
                 Auth::user(),
                 $request->reason
@@ -109,7 +109,7 @@ class TicketMergeController extends Controller
 
             return redirect()
                 ->route('tickets.show', $targetTicket)
-                ->with('success', "Ticket #{$sourceTicket->uuid} has been successfully merged into this ticket.");
+                ->with('success', "Ticket #{$ticket->uuid} has been successfully merged into this ticket.");
 
         } catch (\Exception $e) {
             return back()->withErrors(['merge' => 'Failed to merge tickets: '.$e->getMessage()]);
