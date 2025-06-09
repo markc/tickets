@@ -30,6 +30,11 @@ Route::middleware('auth')->group(function () {
         ->middleware('rate.limit:search')
         ->name('search');
 
+    // Saved Search routes
+    Route::post('/search/save', [\App\Http\Controllers\SearchController::class, 'saveSearch'])->name('search.save');
+    Route::delete('/search/saved/{savedSearch}', [\App\Http\Controllers\SearchController::class, 'deleteSavedSearch'])->name('search.saved.delete');
+    Route::get('/api/search/saved', [\App\Http\Controllers\SearchController::class, 'getSavedSearches'])->name('api.search.saved');
+
     Route::get('/analytics', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('analytics.dashboard');
 
     // Canned Responses API routes
