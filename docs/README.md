@@ -74,6 +74,7 @@ This documentation is organized as a comprehensive guide, taking you from initia
 
 #### Chapter 6: Technical Reference
 - [🔧 API_REFERENCE.md](API_REFERENCE.md) - Complete technical documentation
+- [🌐 REST_API.md](REST_API.md) - REST API documentation and integration guide
 - [⚡ ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Advanced features guide and usage
 - [📋 TICKETING_SYSTEM.md](TICKETING_SYSTEM.md) - Original system requirements
 - [Database Schema](#database-schema)
@@ -147,7 +148,7 @@ TIKM is a modern customer support ticketing system designed to streamline commun
 |-----------|------------|---------|
 | **Backend** | Laravel 12.x | Core application framework |
 | **Admin Panel** | Filament 3.3 | Rich administrative interface |
-| **Authentication** | Laravel Breeze | User authentication system |
+| **Authentication** | Laravel Breeze + Sanctum | Web + API authentication |
 | **Database** | SQLite/MySQL/PostgreSQL | Data persistence |
 | **Frontend** | Vite + Tailwind CSS | Modern build tools and styling |
 | **Testing** | Pest PHP | Comprehensive testing framework |
@@ -376,9 +377,10 @@ Ready to dive deeper? Choose your path:
 
 ### **🛠️ Developers**
 1. **Technical Deep Dive**: [API_REFERENCE.md](API_REFERENCE.md) - Complete technical documentation
-2. **Advanced Features**: [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Search, avatars, security, SLA, and more
-3. **System Requirements**: [TICKETING_SYSTEM.md](TICKETING_SYSTEM.md) - Original specifications
-4. **Development Setup**: Follow the [development commands](#development-commands) above
+2. **REST API Integration**: [REST_API.md](REST_API.md) - API endpoints and mobile integration guide
+3. **Advanced Features**: [ADVANCED_FEATURES.md](ADVANCED_FEATURES.md) - Search, avatars, security, SLA, and more
+4. **System Requirements**: [TICKETING_SYSTEM.md](TICKETING_SYSTEM.md) - Original specifications
+5. **Development Setup**: Follow the [development commands](#development-commands) above
 
 ### **🔧 Administrators**
 1. **Admin Guide**: [USER_GUIDE.md](USER_GUIDE.md#admin-guide) - System administration

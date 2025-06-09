@@ -5,10 +5,11 @@
 ### Technology Stack
 - **Framework**: Laravel 12.x (requires PHP 8.3+)
 - **Admin Panel**: Filament 3.3 at `/admin`
-- **Authentication**: Laravel Breeze
+- **Authentication**: Laravel Breeze (web) + Laravel Sanctum (API)
 - **Database**: SQLite (file: `database/database.sqlite`)
 - **Testing**: Pest PHP with Laravel plugin
 - **Frontend Build**: Vite 6.2 with Tailwind CSS 4.0
+- **API**: RESTful API with token authentication
 - **Session/Cache/Queue**: Database drivers
 
 ### Database Design
@@ -75,6 +76,15 @@ The admin panel is configured in `app/Providers/Filament/AdminPanelProvider.php`
 - **Integration**: Full integration with existing notification and assignment systems
 - **Server Setup**: Comprehensive Dovecot/Postfix configuration guide in `EMAIL_SERVER_SETUP.md`
 
+### REST API System
+- **Authentication**: Laravel Sanctum token-based authentication with 30-day expiration
+- **Endpoints**: Complete CRUD operations for tickets with role-based access control
+- **Authorization**: Customer, agent, and admin role permissions enforced
+- **Features**: Filtering, pagination, search, statistics, and knowledge base integration
+- **Testing**: Comprehensive test suite with 24+ tests covering all API operations
+- **Documentation**: Full API reference available in `REST_API.md`
+- **Mobile Ready**: Designed for mobile app integration with proper error handling
+
 ## Models and Relationships
 
 ### User Model
@@ -89,6 +99,11 @@ createdTickets() -> hasMany(Ticket)
 assignedTickets() -> hasMany(Ticket)
 offices() -> belongsToMany(Office)
 ticketReplies() -> hasMany(TicketReply)
+
+// API Authentication (Laravel Sanctum)
+createToken(string $name, array $abilities = ['*'], DateTimeInterface $expiresAt = null) -> NewAccessToken
+tokens() -> hasMany(PersonalAccessToken)
+currentAccessToken() -> PersonalAccessToken|null
 ```
 
 ### Ticket Model
@@ -167,6 +182,28 @@ getAgentWorkload(User $agent) -> array
 ```php
 createTicketFromEmail(string $fromEmail, string $fromName, string $subject, string $content, array $attachments = []) -> ?Ticket
 createReplyFromEmail(string $ticketUuid, string $fromEmail, string $fromName, string $subject, string $content, array $attachments = []) -> ?TicketReply
+```
+
+## API Controllers
+
+### AuthController
+```php
+login(Request $request) -> JsonResponse
+user(Request $request) -> JsonResponse
+logout(Request $request) -> JsonResponse
+logoutAll(Request $request) -> JsonResponse
+refresh(Request $request) -> JsonResponse
+```
+
+### TicketController (API)
+```php
+index(Request $request) -> JsonResponse       // List tickets with filtering
+store(Request $request) -> JsonResponse       // Create new ticket
+show(string $uuid) -> JsonResponse            // Get specific ticket
+update(Request $request, string $uuid) -> JsonResponse  // Update ticket
+destroy(string $uuid) -> JsonResponse         // Delete ticket (admin only)
+stats(Request $request) -> JsonResponse       // Get ticket statistics
+formData(Request $request) -> JsonResponse    // Get form data (offices, statuses, priorities)
 ```
 
 ## Artisan Commands
