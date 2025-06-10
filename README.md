@@ -5,8 +5,6 @@
 
 A comprehensive customer support system built with Laravel 12, Filament 3.3 and Claude Code, featuring email-to-ticket integration, role-based access control, and a complete support workflow.
 
-<!-- Auto-merge test - remove this line -->
-
 ## Features
 
 ### ✅ Core Functionality
