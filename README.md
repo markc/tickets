@@ -2,6 +2,7 @@
 
 [![Tests](https://github.com/markc/tikm/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/markc/tikm/actions/workflows/tests.yml)
 [![Code Style](https://github.com/markc/tikm/actions/workflows/code-style.yml/badge.svg?branch=main)](https://github.com/markc/tikm/actions/workflows/code-style.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A comprehensive customer support system built with Laravel 12, Filament 3.3 and Claude Code, featuring email-to-ticket integration, role-based access control, and a complete support workflow.
 
