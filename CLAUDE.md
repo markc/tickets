@@ -56,6 +56,17 @@ composer dev  # Runs PHP server, queue listener, log viewer, and Vite concurrent
 ./vendor/bin/pint --test  # Check style without fixing (used in CI)
 ```
 
+### Git Workflow for Upstream Changes
+```bash
+# IMPORTANT: Always use these commands when committing changes upstream
+git start    # Start a new feature branch
+# ... make your changes and commits ...
+git finish   # Merge to main and push upstream
+
+# These aliases are configured in scripts/setup-git-aliases.sh
+# Never commit directly to main - always use feature branches
+```
+
 ## Development Commands
 
 ### Environment Management
@@ -313,6 +324,15 @@ For complete documentation, see the `docs/` directory:
 
 ## Contributing
 
+### Git Workflow (CRITICAL)
+**ALWAYS use the proper git workflow for ANY changes committed upstream:**
+1. Run `git start [branch-name]` to create a feature branch from latest main
+2. Make your changes and test them
+3. Run `git finish [optional-commit-message]` to format, commit, PR, and merge
+4. **NEVER commit directly to main branch**
+5. **NEVER use manual `git commit` and `git push` - always use `git finish`**
+
+### Development Guidelines
 When extending this system:
 1. Follow Laravel best practices
 2. Maintain backward compatibility
