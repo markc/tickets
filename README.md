@@ -34,34 +34,61 @@ A comprehensive customer support system built with Laravel 12, Filament 3.3 and 
 - **Queue-based** email processing for performance
 - **UUID-based** public routing for security
 
+## 🚨 Development Workflow (MANDATORY)
+
+**CRITICAL**: This project enforces a specific git workflow. You MUST use the provided scripts:
+
+```bash
+# 1. ALWAYS start new work with:
+./scripts/git-start.sh [feature-name]
+
+# 2. ALWAYS finish work with:
+./scripts/git-finish.sh "your commit message"
+
+# 3. Install git hooks (first time only):
+./scripts/install-git-hooks.sh
+```
+
+**⚠️ Direct git commands are blocked on main branch!**
+
 ## Quick Start
 
 ### Prerequisites
-- PHP 8.3+
+- PHP 8.3+ with ext-mailparse
 - Composer
 - Node.js 18+ and npm
 
 ### Installation
 
 ```bash
-# Clone and setup
+# Clone repository
 git clone https://github.com/markc/tikm
 cd tikm
 
-# Install dependencies
-composer install
-npm install
-
-# Environment setup
-cp .env.example .env
-php artisan key:generate
-
-# Database and assets
-php artisan migrate --seed
-npm run dev
+# Automated setup (recommended)
+./scripts/setup-development.sh
 
 # Start development server
 composer dev
+```
+
+**OR manual setup:**
+
+```bash
+# Install dependencies
+composer install && npm install
+
+# Environment setup
+cp .env.example .env && php artisan key:generate
+
+# Database setup
+php artisan migrate --seed
+
+# Install required git hooks
+./scripts/install-git-hooks.sh
+
+# Build assets and start server
+npm run build && composer dev
 ```
 
 Visit http://127.0.0.1:8000 to access the application.

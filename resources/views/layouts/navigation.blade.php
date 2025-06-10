@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('faq.index')" :active="request()->routeIs('faq.*')">
                         {{ __('FAQ') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('documentation.index')" :active="request()->routeIs('documentation.*')">
+                        {{ __('Documentation') }}
+                    </x-nav-link>
                     @if(auth()->user()->isAdmin() || auth()->user()->isAgent())
                         <x-nav-link :href="route('analytics.dashboard')" :active="request()->routeIs('analytics.*')">
                             {{ __('Analytics') }}
@@ -102,6 +105,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('faq.index')" :active="request()->routeIs('faq.*')">
                 {{ __('FAQ') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('documentation.index')" :active="request()->routeIs('documentation.*')">
+                {{ __('Documentation') }}
             </x-responsive-nav-link>
             @if(auth()->user()->isAdmin() || auth()->user()->isAgent())
                 <x-responsive-nav-link :href="route('analytics.dashboard')" :active="request()->routeIs('analytics.*')">
