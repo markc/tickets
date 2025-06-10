@@ -41,17 +41,13 @@ composer dev  # Runs PHP server, queue listener, log viewer, and Vite concurrent
 ### GitHub Actions Workflows
 ```bash
 # Code quality checks run automatically on push/PR
-# - Laravel Pint code style checking
+# - Laravel Pint code style checking (quality gate only)
 # - Pest PHP test suite
-# - PHP 8.2 compatibility validation
-
-# Manual code style fixes
-# Workflow: "Fix Code Style" can be triggered manually
-# Auto-commits style fixes when needed
+# - PHP 8.3 compatibility validation
 ```
 
 ### Git Workflow Scripts
-**IMPORTANT**: Always use the custom git workflow scripts to prevent missed merges and orphaned branches.
+**CRITICAL**: ALWAYS use the custom git workflow scripts. Direct git commands bypass essential safeguards.
 
 ```bash
 # Start new feature work
@@ -64,18 +60,23 @@ composer dev  # Runs PHP server, queue listener, log viewer, and Vite concurrent
 ./scripts/git-cleanup.sh                # Removes merged branches and orphaned remotes
 ```
 
-**Why these scripts prevent missed merges:**
-- Verifies PR is actually merged before switching branches
-- Waits for auto-merge completion with fallback to immediate merge
-- Double-checks changes are synced to local main
-- Cleans up both local and remote branches automatically
-- Provides verification status at completion
+**MANDATORY WORKFLOW - NO EXCEPTIONS:**
+1. **NEVER use direct git commands** for feature development
+2. **ALWAYS start with**: `./scripts/git-start.sh [branch-name]`
+3. **ALWAYS finish with**: `./scripts/git-finish.sh [commit-message]`
+4. **Scripts handle automatically**: Code formatting, testing, PR creation, merging, cleanup
 
-### Code Style Management
-```bash
-./vendor/bin/pint         # Fix PHP code style locally
-./vendor/bin/pint --test  # Check style without fixing (used in CI)
-```
+**Why this workflow is mandatory:**
+- ✅ Prevents missed merges and orphaned branches
+- ✅ Automatic code style fixing with Laravel Pint
+- ✅ Verifies PR is actually merged before cleanup
+- ✅ Maintains clean git history and branch hygiene
+- ✅ Ensures CI passes before merging
+
+**Code Style is Automated:**
+- `git-finish.sh` runs `vendor/bin/pint` automatically
+- CI runs `vendor/bin/pint --test` as quality gate
+- Manual fixing with `./vendor/bin/pint` only if needed
 
 ## Development Commands
 
