@@ -1,17 +1,42 @@
 @push('styles')
-    <!-- GitHub-style syntax highlighting themes -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+    <!-- GitHub-style syntax highlighting themes with cache busting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css?v={{ time() }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css?v={{ time() }}" media="(prefers-color-scheme: dark)">
     
     <style>
-        /* Reset and base GitHub-style markdown rendering */
-        .prose {
-            @apply text-gray-900 dark:text-gray-100;
-            max-width: none;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+        /* GitHub-accurate CSS variables */
+        #documentation-content {
+            --color-text-primary: #24292f;
+            --color-text-secondary: #57606a;
+            --color-border-primary: #d0d7de;
+            --color-border-secondary: #eaecef;
+            --color-code-bg: #f6f8fa;
+            --color-code-text: #24292f;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
             font-size: 16px;
             line-height: 1.5;
-            color: #1f2328;
+            color: var(--color-text-primary);
+            max-width: none;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            #documentation-content {
+                --color-text-primary: #c9d1d9;
+                --color-text-secondary: #8b949e;
+                --color-border-primary: #30363d;
+                --color-border-secondary: #21262d;
+                --color-code-bg: #161b22;
+                --color-code-text: #c9d1d9;
+            }
+        }
+        
+        html[class~="dark"] #documentation-content {
+            --color-text-primary: #c9d1d9;
+            --color-text-secondary: #8b949e;
+            --color-border-primary: #30363d;
+            --color-border-secondary: #21262d;
+            --color-code-bg: #161b22;
+            --color-code-text: #c9d1d9;
         }
         
         html[class~="dark"] .prose {
@@ -79,42 +104,38 @@
             color: #e6edf3;
         }
         
-        /* Code blocks with exact GitHub appearance */
-        .prose pre {
-            background-color: #f6f8fa;
-            border-radius: 6px;
+        /* GitHub-exact code block styling */
+        #documentation-content pre {
+            margin-top: 0;
+            margin-bottom: 16px;
             padding: 16px;
             overflow: auto;
             font-size: 85%;
             line-height: 1.45;
-            margin-bottom: 16px;
-            font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
-            border: 1px solid #d1d9e0;
+            background-color: var(--color-code-bg);
+            border-radius: 6px;
+            border: 1px solid var(--color-border-primary);
             position: relative;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
         }
         
-        html[class~="dark"] .prose pre {
-            background-color: #161b22;
-            border-color: #30363d;
-        }
-        
-        .prose pre code {
-            background: transparent !important;
+        #documentation-content pre code {
             padding: 0 !important;
-            margin: 0;
-            font-size: 100%;
-            color: #1f2328;
+            margin: 0 !important;
+            background-color: transparent !important;
+            border: 0 !important;
+            font-size: 100% !important;
+            color: var(--color-text-primary) !important;
             word-break: normal;
             white-space: pre;
-            border: 0;
+            border-radius: 0 !important;
         }
         
-        html[class~="dark"] .prose pre code {
-            color: #e6edf3;
-        }
-        
-        /* Inline code with exact GitHub styling - high specificity */
-        .prose code:not(.hljs):not(pre code) {
+        /* Force inline code styling with absolute maximum specificity */
+        .fi-section .prose code:not(.hljs):not(pre code),
+        .prose code:not(.hljs):not(pre code),
+        div.prose code:not(.hljs):not(pre code),
+        code:not(.hljs):not(pre code) {
             background-color: rgba(175, 184, 193, 0.2) !important;
             padding: 0.2em 0.4em !important;
             margin: 0 !important;
@@ -124,9 +145,69 @@
             color: #1f2328 !important;
             font-weight: 400 !important;
             border: none !important;
+            box-shadow: none !important;
+            text-decoration: none !important;
         }
         
-        /* Additional selectors for inline code */
+        /* Force override for all possible contexts */
+        * code:not(.hljs):not(pre code) {
+            background-color: rgba(175, 184, 193, 0.2) !important;
+            padding: 0.2em 0.4em !important;
+            margin: 0 !important;
+            font-size: 85% !important;
+            border-radius: 6px !important;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace !important;
+            color: #1f2328 !important;
+            font-weight: 400 !important;
+            border: none !important;
+            box-shadow: none !important;
+            text-decoration: none !important;
+        }
+        
+        /* GitHub-exact inline code styling */
+        #documentation-content code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace !important;
+            font-size: 85% !important;
+            padding: 0.2em 0.4em !important;
+            margin: 0 !important;
+            background-color: var(--color-code-bg) !important;
+            border-radius: 6px !important;
+            color: var(--color-code-text) !important;
+            border: none !important;
+        }
+        
+        /* Reset for code blocks */
+        pre code {
+            background-color: transparent !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            border: none !important;
+            font-size: 100% !important;
+        }
+        
+        /* Dark mode */
+        html[class~="dark"] code {
+            background-color: rgba(110, 118, 129, 0.4) !important;
+            color: #f0f6fc !important;
+            border-color: rgba(110, 118, 129, 0.4) !important;
+        }
+        
+        html[class~="dark"] pre code {
+            background-color: transparent !important;
+            border: none !important;
+        }
+        
+        /* Additional selectors for inline code with maximum specificity */
+        div.prose p code,
+        div.prose li code,
+        div.prose td code,
+        div.prose th code,
+        div.prose h1 code,
+        div.prose h2 code,
+        div.prose h3 code,
+        div.prose h4 code,
+        div.prose h5 code,
+        div.prose h6 code,
         .prose p code,
         .prose li code,
         .prose td code,
@@ -146,6 +227,7 @@
             color: #1f2328 !important;
             font-weight: 400 !important;
             border: none !important;
+            box-shadow: none !important;
         }
         
         /* Dark mode for inline code */
@@ -346,78 +428,147 @@
             border-color: #8b949e;
         }
         
-        /* GitHub Syntax Highlighting Colors - Light Mode */
-        .prose .hljs {
+        /* Enhanced GitHub Syntax Highlighting Colors */
+        #documentation-content .hljs {
             background: transparent !important;
         }
         
-        /* Keywords (if, class, function, etc.) */
-        .prose .hljs-keyword,
-        .prose .hljs-selector-tag,
-        .prose .hljs-literal,
-        .prose .hljs-section,
-        .prose .hljs-link {
-            color: #cf222e;
+        /* GitHub-exact syntax highlighting colors */
+        #documentation-content .hljs-comment,
+        #documentation-content .hljs-prolog,
+        #documentation-content .hljs-doctype,
+        #documentation-content .hljs-cdata {
+            color: #6a737d !important;
         }
         
-        /* Strings */
-        .prose .hljs-string,
-        .prose .hljs-attr {
-            color: #0a3069;
+        #documentation-content .hljs-punctuation {
+            color: #6a737d !important;
         }
         
-        /* Numbers */
-        .prose .hljs-number,
-        .prose .hljs-literal {
-            color: #0550ae;
+        #documentation-content .hljs-property,
+        #documentation-content .hljs-tag,
+        #documentation-content .hljs-boolean,
+        #documentation-content .hljs-number,
+        #documentation-content .hljs-constant,
+        #documentation-content .hljs-symbol,
+        #documentation-content .hljs-deleted {
+            color: #005cc5 !important;
         }
         
-        /* Comments */
-        .prose .hljs-comment,
-        .prose .hljs-quote {
-            color: #6e7781;
-            font-style: italic;
+        #documentation-content .hljs-selector,
+        #documentation-content .hljs-attr-name,
+        #documentation-content .hljs-string,
+        #documentation-content .hljs-char,
+        #documentation-content .hljs-builtin,
+        #documentation-content .hljs-inserted {
+            color: #032f62 !important;
         }
         
-        /* Variables and function names */
-        .prose .hljs-variable,
-        .prose .hljs-title.function_,
-        .prose .hljs-title {
-            color: #8250df;
+        #documentation-content .hljs-operator,
+        #documentation-content .hljs-entity,
+        #documentation-content .hljs-url,
+        #documentation-content .hljs-keyword {
+            color: #d73a49 !important;
         }
         
-        /* Class names and types */
-        .prose .hljs-title.class_,
-        .prose .hljs-type {
-            color: #953800;
+        #documentation-content .hljs-function,
+        #documentation-content .hljs-class-name {
+            color: #6f42c1 !important;
         }
         
-        /* Built-in functions and keywords */
-        .prose .hljs-built_in,
-        .prose .hljs-builtin-name {
-            color: #0550ae;
+        #documentation-content .hljs-regex,
+        #documentation-content .hljs-important,
+        #documentation-content .hljs-variable {
+            color: #e36209 !important;
         }
         
-        /* Operators */
-        .prose .hljs-operator {
-            color: #cf222e;
+        /* Dark mode syntax highlighting */
+        @media (prefers-color-scheme: dark) {
+            #documentation-content .hljs-comment,
+            #documentation-content .hljs-prolog,
+            #documentation-content .hljs-doctype,
+            #documentation-content .hljs-cdata,
+            #documentation-content .hljs-punctuation {
+                color: #8b949e !important;
+            }
+            
+            #documentation-content .hljs-property,
+            #documentation-content .hljs-tag,
+            #documentation-content .hljs-constant,
+            #documentation-content .hljs-symbol,
+            #documentation-content .hljs-deleted {
+                color: #79c0ff !important;
+            }
+            
+            #documentation-content .hljs-selector,
+            #documentation-content .hljs-attr-name,
+            #documentation-content .hljs-string,
+            #documentation-content .hljs-char,
+            #documentation-content .hljs-builtin,
+            #documentation-content .hljs-inserted {
+                color: #a5d6ff !important;
+            }
+            
+            #documentation-content .hljs-operator,
+            #documentation-content .hljs-entity,
+            #documentation-content .hljs-url,
+            #documentation-content .hljs-keyword {
+                color: #ff7b72 !important;
+            }
+            
+            #documentation-content .hljs-function,
+            #documentation-content .hljs-class-name {
+                color: #d2a8ff !important;
+            }
+            
+            #documentation-content .hljs-regex,
+            #documentation-content .hljs-important,
+            #documentation-content .hljs-variable {
+                color: #ffa657 !important;
+            }
         }
         
-        /* Attributes and properties */
-        .prose .hljs-attribute {
-            color: #116329;
+        html[class~="dark"] #documentation-content .hljs-comment,
+        html[class~="dark"] #documentation-content .hljs-prolog,
+        html[class~="dark"] #documentation-content .hljs-doctype,
+        html[class~="dark"] #documentation-content .hljs-cdata,
+        html[class~="dark"] #documentation-content .hljs-punctuation {
+            color: #8b949e !important;
         }
         
-        /* Meta and preprocessor */
-        .prose .hljs-meta,
-        .prose .hljs-meta .hljs-string {
-            color: #0550ae;
+        html[class~="dark"] #documentation-content .hljs-property,
+        html[class~="dark"] #documentation-content .hljs-tag,
+        html[class~="dark"] #documentation-content .hljs-constant,
+        html[class~="dark"] #documentation-content .hljs-symbol,
+        html[class~="dark"] #documentation-content .hljs-deleted {
+            color: #79c0ff !important;
         }
         
-        /* Template literals and special strings */
-        .prose .hljs-template-tag,
-        .prose .hljs-template-variable {
-            color: #0a3069;
+        html[class~="dark"] #documentation-content .hljs-selector,
+        html[class~="dark"] #documentation-content .hljs-attr-name,
+        html[class~="dark"] #documentation-content .hljs-string,
+        html[class~="dark"] #documentation-content .hljs-char,
+        html[class~="dark"] #documentation-content .hljs-builtin,
+        html[class~="dark"] #documentation-content .hljs-inserted {
+            color: #a5d6ff !important;
+        }
+        
+        html[class~="dark"] #documentation-content .hljs-operator,
+        html[class~="dark"] #documentation-content .hljs-entity,
+        html[class~="dark"] #documentation-content .hljs-url,
+        html[class~="dark"] #documentation-content .hljs-keyword {
+            color: #ff7b72 !important;
+        }
+        
+        html[class~="dark"] #documentation-content .hljs-function,
+        html[class~="dark"] #documentation-content .hljs-class-name {
+            color: #d2a8ff !important;
+        }
+        
+        html[class~="dark"] #documentation-content .hljs-regex,
+        html[class~="dark"] #documentation-content .hljs-important,
+        html[class~="dark"] #documentation-content .hljs-variable {
+            color: #ffa657 !important;
         }
         
         /* Dark Mode Syntax Highlighting */
@@ -553,20 +704,44 @@
 @endpush
 
 @push('scripts')
-    <!-- Initialize highlight.js for dynamic syntax highlighting -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/php.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+    <!-- Initialize highlight.js for dynamic syntax highlighting with cache busting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js?v={{ time() }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/php.min.js?v={{ time() }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js?v={{ time() }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js?v={{ time() }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js?v={{ time() }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js?v={{ time() }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js?v={{ time() }}"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Only highlight code blocks (pre code), not inline code
-            document.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightElement(block);
-            });
+        // Wait for all scripts to load
+        window.addEventListener('load', function() {
+            console.log('Page loaded, initializing syntax highlighting...');
+            console.log('hljs available:', typeof hljs !== 'undefined');
+            
+            if (typeof hljs !== 'undefined') {
+                // Configure hljs to be less aggressive
+                hljs.configure({
+                    ignoreUnescapedHTML: true,
+                    languages: ['php', 'bash', 'javascript', 'sql', 'json', 'yaml'],
+                    throwUnescapedHTML: false
+                });
+                
+                // Only highlight pre code blocks, not inline code
+                const codeBlocks = document.querySelectorAll('#documentation-content pre code');
+                console.log('Found code blocks:', codeBlocks.length);
+                
+                codeBlocks.forEach((block, index) => {
+                    // Only highlight if it has a language class or is clearly a code block
+                    if (block.className.includes('language-') || block.parentElement.tagName === 'PRE') {
+                        console.log(`Highlighting block ${index + 1}:`, block.className);
+                        hljs.highlightElement(block);
+                    }
+                });
+                
+                console.log('Syntax highlighting completed');
+            } else {
+                console.error('highlight.js not loaded!');
+            }
             
             // Add GitHub-style copy buttons to code blocks only
             document.querySelectorAll('pre code').forEach((block) => {
@@ -610,8 +785,8 @@
 
     @if($doc)
         <x-filament::section>
-            <div class="prose prose-lg max-w-none dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-gray-100">
-                {!! $doc->rendered_content !!}
+            <div class="prose prose-lg max-w-none dark:prose-invert" id="documentation-content">
+                <?php echo $doc->rendered_content; ?>
             </div>
         </x-filament::section>
     @else
