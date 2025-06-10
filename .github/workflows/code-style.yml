@@ -3,8 +3,6 @@ name: Code Style
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 # Prevent duplicate runs when PR is merged
 concurrency:
