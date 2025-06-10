@@ -1,134 +1,83 @@
-<x-app-layout>
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <!-- Header -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16">
-                    <div class="flex items-center">
-                        <a href="{{ route('documentation.index') }}" 
-                           class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                            <x-heroicon-o-arrow-left class="h-4 w-4 mr-2"/>
-                            Documentation
-                        </a>
-                        <span class="mx-2 text-gray-400">/</span>
-                        <span class="text-sm font-medium text-gray-900 dark:text-white capitalize">{{ $documentation->category }}</span>
-                    </div>
-                    
-                    <div class="flex items-center space-x-4">
-                        <!-- Search -->
-                        <form action="{{ route('documentation.search') }}" method="GET" class="flex items-center">
-                            <input type="text" name="q" placeholder="Search docs..." 
-                                   class="w-64 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 text-sm">
-                            <button type="submit" class="ml-2 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                                <x-heroicon-o-magnifying-glass class="h-4 w-4"/>
-                            </button>
-                        </form>
-                        
-                        @auth
-                            @if(auth()->user()->role === 'admin')
-                            <a href="{{ route('filament.admin.resources.documentations.edit', $documentation) }}" 
-                               class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <x-heroicon-o-pencil class="h-3 w-3 mr-1"/>
-                                Edit
-                            </a>
-                            @endif
-                        @endauth
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex gap-8">
-                <!-- Left Sidebar Navigation -->
-                <div class="hidden lg:block w-64 flex-shrink-0">
-                    <div class="sticky top-6">
-                        <nav class="space-y-1">
-                            @foreach($navigation as $categorySlug => $categoryData)
-                            <div class="mb-6">
-                                <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                                    {{ $categoryData['name'] }}
-                                </h3>
-                                <ul class="space-y-1">
-                                    @foreach($categoryData['docs'] as $doc)
-                                    <li>
-                                        <a href="{{ route('documentation.show', $doc) }}" 
-                                           class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors {{ $doc->id === $documentation->id ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
-                                            {{ $doc->title }}
-                                        </a>
-                                    </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                            @endforeach
-                        </nav>
-                    </div>
-                </div>
-
-                <!-- Main Content -->
-                <div class="flex-1 max-w-4xl">
-                    <article class="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+<x-documentation-layout>
+    <div class="flex h-full">
+        <!-- Main Content Area -->
+        <div class="flex-1 overflow-hidden">
+            <div class="flex h-full">
+                <!-- Content -->
+                <main class="flex-1 overflow-y-auto">
+                    <div class="mx-auto max-w-4xl px-6 py-8">
                         <!-- Article Header -->
-                        <div class="px-6 py-6 border-b border-gray-200 dark:border-gray-700">
-                            <div class="flex items-center justify-between mb-4">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize {{ match($documentation->category) {
-                                    'overview' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
-                                    'user' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-                                    'admin' => 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300',
-                                    'api' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-                                    'deployment' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-                                    'development' => 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
-                                    default => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                                } }}">
-                                    {{ $documentation->category }}
-                                </span>
-                                
-                                @if($documentation->version)
-                                <span class="text-sm text-gray-500 dark:text-gray-400">
-                                    v{{ $documentation->version }}
-                                </span>
-                                @endif
+                        <header class="mb-8">
+                            <div class="mb-4 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="fi-badge fi-color-{{ match($documentation->category) {
+                                        'overview' => 'gray',
+                                        'user' => 'primary',
+                                        'admin' => 'warning',
+                                        'api' => 'success',
+                                        'deployment' => 'danger',
+                                        'development' => 'info',
+                                        default => 'gray'
+                                    } }} fi-size-sm inline-flex items-center gap-x-1 rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset capitalize">
+                                        {{ $documentation->category }}
+                                    </span>
+                                    
+                                    @if($documentation->version)
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">
+                                        v{{ $documentation->version }}
+                                    </span>
+                                    @endif
+                                </div>
                             </div>
                             
-                            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                            <h1 class="text-3xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-4xl">
                                 {{ $documentation->title }}
                             </h1>
                             
                             @if($documentation->description)
-                            <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
+                            <p class="mt-4 text-xl text-gray-600 dark:text-gray-400">
                                 {{ $documentation->description }}
                             </p>
                             @endif
                             
-                            <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                                @if($documentation->last_updated)
-                                <span>Last updated {{ $documentation->last_updated->format('M j, Y') }}</span>
-                                @else
-                                <span>Updated {{ $documentation->updated_at->format('M j, Y') }}</span>
-                                @endif
+                            <div class="mt-6 flex items-center gap-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                <div class="flex items-center gap-x-2">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    @if($documentation->last_updated)
+                                    <span>Last updated {{ $documentation->last_updated->format('M j, Y') }}</span>
+                                    @else
+                                    <span>Updated {{ $documentation->updated_at->format('M j, Y') }}</span>
+                                    @endif
+                                </div>
                                 
                                 @if($documentation->updatedBy)
-                                <span class="mx-2">•</span>
-                                <span>by {{ $documentation->updatedBy->name }}</span>
+                                <div class="flex items-center gap-x-2">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                    <span>by {{ $documentation->updatedBy->name }}</span>
+                                </div>
                                 @endif
                             </div>
-                        </div>
+                        </header>
 
                         <!-- Article Content -->
-                        <div class="px-6 py-6">
-                            <div class="prose prose-lg dark:prose-invert max-w-none">
-                                {!! $documentation->rendered_content !!}
-                            </div>
+                        <div class="prose prose-lg prose-gray max-w-none dark:prose-invert">
+                            {!! $documentation->rendered_content !!}
                         </div>
 
                         <!-- Navigation Footer -->
-                        <div class="px-6 py-6 border-t border-gray-200 dark:border-gray-700">
+                        <nav class="mt-12 border-t border-gray-200 pt-8 dark:border-gray-800">
                             <div class="flex justify-between">
                                 @if($previousDoc)
                                 <a href="{{ route('documentation.show', $previousDoc) }}" 
-                                   class="flex items-center text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300">
-                                    <x-heroicon-o-arrow-left class="h-4 w-4 mr-2"/>
-                                    {{ $previousDoc->title }}
+                                   class="group flex items-center gap-x-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                    <svg class="h-4 w-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                    </svg>
+                                    <span>{{ $previousDoc->title }}</span>
                                 </a>
                                 @else
                                 <div></div>
@@ -136,34 +85,39 @@
 
                                 @if($nextDoc)
                                 <a href="{{ route('documentation.show', $nextDoc) }}" 
-                                   class="flex items-center text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300">
-                                    {{ $nextDoc->title }}
-                                    <x-heroicon-o-arrow-right class="h-4 w-4 ml-2"/>
+                                   class="group flex items-center gap-x-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                    <span>{{ $nextDoc->title }}</span>
+                                    <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
                                 </a>
                                 @endif
                             </div>
-                        </div>
-                    </article>
-                </div>
+                        </nav>
+                    </div>
+                </main>
 
-                <!-- Right Sidebar - Table of Contents -->
+                <!-- Table of Contents Sidebar -->
                 @if(count($tableOfContents) > 0)
-                <div class="hidden xl:block w-64 flex-shrink-0">
-                    <div class="sticky top-6">
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-                            <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">On this page</h3>
-                            <nav class="space-y-1">
-                                @foreach($tableOfContents as $item)
-                                <a href="#{{ $item['anchor'] }}" 
-                                   class="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors {{ $item['level'] > 1 ? 'ml-' . (($item['level'] - 1) * 3) : '' }}"
-                                   style="padding-left: {{ ($item['level'] - 1) * 12 }}px">
-                                    {{ $item['title'] }}
-                                </a>
-                                @endforeach
+                <aside class="hidden w-64 flex-shrink-0 xl:block">
+                    <div class="sticky top-0 h-screen overflow-y-auto py-8">
+                        <div class="px-6">
+                            <h3 class="text-sm font-semibold text-gray-950 dark:text-white">On this page</h3>
+                            <nav class="mt-4">
+                                <ul class="space-y-2 text-sm">
+                                    @foreach($tableOfContents as $item)
+                                    <li style="padding-left: {{ ($item['level'] - 1) * 16 }}px">
+                                        <a href="#{{ $item['anchor'] }}" 
+                                           class="block text-gray-600 transition-colors hover:text-gray-950 dark:text-gray-400 dark:hover:text-white">
+                                            {{ $item['title'] }}
+                                        </a>
+                                    </li>
+                                    @endforeach
+                                </ul>
                             </nav>
                         </div>
                     </div>
-                </div>
+                </aside>
                 @endif
             </div>
         </div>

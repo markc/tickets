@@ -18,6 +18,78 @@ Before you begin, ensure you have:
 - **PHP 8.3+** installed
 - **Composer** for dependency management
 - **Node.js 18+** and npm
+
+## Installation
+
+### 1. Clone and Install Dependencies
+
+```bash
+# Clone the repository
+git clone https://github.com/yourproject/tikm.git
+cd tikm
+
+# Install PHP dependencies
+composer install
+
+# Install Node.js dependencies
+npm install
+```
+
+### 2. Environment Setup
+
+```bash
+# Copy environment file
+cp .env.example .env
+
+# Generate application key
+php artisan key:generate
+```
+
+### 3. Database Setup
+
+```php
+<?php
+// Run migrations and seeders
+use Illuminate\Support\Facades\Artisan;
+
+Artisan::call('migrate');
+Artisan::call('db:seed');
+```
+
+### 4. Start Development Server
+
+```bash
+# Start all development services
+composer dev
+
+# Or start individual services
+php artisan serve
+npm run dev
+php artisan queue:listen
+```
+
+## Testing the Installation
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| **Main App** | http://localhost:8000 | Customer interface |
+| **Admin Panel** | http://localhost:8000/admin | Agent/Admin interface |
+| **API** | http://localhost:8000/api | REST API endpoints |
+
+### Default Login Credentials
+
+> **Note**: Change these credentials in production!
+
+- **Admin**: admin@example.com / password
+- **Agent**: agent@example.com / password  
+- **Customer**: customer@example.com / password
+
+## Next Steps
+
+- [ ] Configure email settings for ticket notifications
+- [ ] Set up your first office/department
+- [ ] Create custom ticket statuses and priorities
+- [ ] Import existing FAQs
 - **Git** for version control
 
 ## Installation Steps

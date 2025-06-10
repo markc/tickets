@@ -15,6 +15,7 @@
         "laravel/tinker": "^2.10.1",
         "php-mime-mail-parser/php-mime-mail-parser": "^1.7.4",
         "pusher/pusher-php-server": "^7.2.7",
+        "spatie/commonmark-highlighter": "^3.0",
         "teamtnt/laravel-scout-tntsearch-driver": "^15.0"
     },
     "require-dev": {

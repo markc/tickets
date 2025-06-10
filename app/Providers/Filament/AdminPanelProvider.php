@@ -38,6 +38,9 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->navigationGroups([
                 NavigationGroup::make()
+                    ->label('Documentation')
+                    ->icon('heroicon-o-book-open'),
+                NavigationGroup::make()
                     ->label('Settings')
                     ->icon('heroicon-o-cog-6-tooth')
                     ->collapsed(),
