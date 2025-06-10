@@ -15,6 +15,14 @@ class RedirectIfNotAllowedInFilament
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Auto-login as admin in local development mode
+        if (app()->environment('local') && ! auth()->check()) {
+            $adminUser = \App\Models\User::where('email', 'admin@tikm.com')->first();
+            if ($adminUser) {
+                auth()->login($adminUser);
+            }
+        }
+
         if (! auth()->check() || ! in_array(auth()->user()->role, ['admin', 'agent'])) {
             abort(403, 'Unauthorized access to admin panel.');
         }

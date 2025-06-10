@@ -11,7 +11,12 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
+        $user = safe_auth_user();
+
+        if (! $user) {
+            abort(401, 'User not authenticated');
+        }
+
         $stats = [];
 
         if ($user->isCustomer()) {

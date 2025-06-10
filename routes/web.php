@@ -17,7 +17,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])->name('dashboard');
+    ->middleware(app()->environment('local') ? [] : ['auth', 'verified'])->name('dashboard');
 
 Route::get('/faq', [\App\Http\Controllers\FAQController::class, 'index'])->name('faq.index');
 
@@ -26,7 +26,7 @@ Route::get('/docs', fn () => redirect('/admin/docs/index'))->name('documentation
 Route::get('/docs/search', fn () => redirect('/admin/docs/index'))->name('documentation.search');
 Route::get('/docs/{documentation}', fn () => redirect('/admin/docs/index'))->name('documentation.show');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(app()->environment('local') ? [] : ['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

@@ -131,50 +131,20 @@
             border-radius: 0 !important;
         }
         
-        /* Force inline code styling with absolute maximum specificity */
-        .fi-section .prose code:not(.hljs):not(pre code),
-        .prose code:not(.hljs):not(pre code),
-        div.prose code:not(.hljs):not(pre code),
-        code:not(.hljs):not(pre code) {
+        /* Simplified inline code styling with high specificity but not overly complex */
+        #documentation-content code:not(.hljs):not(pre code) {
             background-color: rgba(175, 184, 193, 0.2) !important;
             padding: 0.2em 0.4em !important;
             margin: 0 !important;
             font-size: 85% !important;
             border-radius: 6px !important;
-            font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace !important;
-            color: #1f2328 !important;
-            font-weight: 400 !important;
-            border: none !important;
-            box-shadow: none !important;
-            text-decoration: none !important;
-        }
-        
-        /* Force override for all possible contexts */
-        * code:not(.hljs):not(pre code) {
-            background-color: rgba(175, 184, 193, 0.2) !important;
-            padding: 0.2em 0.4em !important;
-            margin: 0 !important;
-            font-size: 85% !important;
-            border-radius: 6px !important;
-            font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace !important;
-            color: #1f2328 !important;
-            font-weight: 400 !important;
-            border: none !important;
-            box-shadow: none !important;
-            text-decoration: none !important;
-        }
-        
-        /* GitHub-exact inline code styling */
-        #documentation-content code {
             font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace !important;
-            font-size: 85% !important;
-            padding: 0.2em 0.4em !important;
-            margin: 0 !important;
-            background-color: var(--color-code-bg) !important;
-            border-radius: 6px !important;
-            color: var(--color-code-text) !important;
+            color: #1f2328 !important;
+            font-weight: 400 !important;
             border: none !important;
         }
+        
+        /* Removed duplicate styling - using simplified version above */
         
         /* Reset for code blocks */
         pre code {
@@ -197,68 +167,17 @@
             border: none !important;
         }
         
-        /* Additional selectors for inline code with maximum specificity */
-        div.prose p code,
-        div.prose li code,
-        div.prose td code,
-        div.prose th code,
-        div.prose h1 code,
-        div.prose h2 code,
-        div.prose h3 code,
-        div.prose h4 code,
-        div.prose h5 code,
-        div.prose h6 code,
-        .prose p code,
-        .prose li code,
-        .prose td code,
-        .prose th code,
-        .prose h1 code,
-        .prose h2 code,
-        .prose h3 code,
-        .prose h4 code,
-        .prose h5 code,
-        .prose h6 code {
-            background-color: rgba(175, 184, 193, 0.2) !important;
-            padding: 0.2em 0.4em !important;
-            margin: 0 !important;
-            font-size: 85% !important;
-            border-radius: 6px !important;
-            font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace !important;
-            color: #1f2328 !important;
-            font-weight: 400 !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
+        /* Removed excessive selectors - using single simplified selector above */
         
-        /* Dark mode for inline code */
-        html[class~="dark"] .prose code:not(.hljs):not(pre code),
-        html[class~="dark"] .prose p code,
-        html[class~="dark"] .prose li code,
-        html[class~="dark"] .prose td code,
-        html[class~="dark"] .prose th code,
-        html[class~="dark"] .prose h1 code,
-        html[class~="dark"] .prose h2 code,
-        html[class~="dark"] .prose h3 code,
-        html[class~="dark"] .prose h4 code,
-        html[class~="dark"] .prose h5 code,
-        html[class~="dark"] .prose h6 code {
+        /* Simplified dark mode for inline code */
+        html[class~="dark"] #documentation-content code:not(.hljs):not(pre code) {
             background-color: rgba(110, 118, 129, 0.4) !important;
             color: #e6edf3 !important;
         }
         
-        /* Dark mode media query backup */
+        /* Simplified dark mode media query */
         @media (prefers-color-scheme: dark) {
-            .prose code:not(.hljs):not(pre code),
-            .prose p code,
-            .prose li code,
-            .prose td code,
-            .prose th code,
-            .prose h1 code,
-            .prose h2 code,
-            .prose h3 code,
-            .prose h4 code,
-            .prose h5 code,
-            .prose h6 code {
+            #documentation-content code:not(.hljs):not(pre code) {
                 background-color: rgba(110, 118, 129, 0.4) !important;
                 color: #e6edf3 !important;
             }
@@ -700,6 +619,156 @@
         html[class~="dark"] .prose .hljs-template-variable {
             color: #a5d6ff;
         }
+        
+        /* --- Styling for <details> and <summary> FAQ/accordion elements --- */
+        #documentation-content details {
+            background-color: #f6f8fa;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        #documentation-content details[open] {
+            background-color: #ffffff;
+        }
+
+        #documentation-content summary {
+            font-weight: 600;
+            padding: 1rem;
+            cursor: pointer;
+            list-style: none; /* Remove default marker */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #1f2328;
+        }
+
+        #documentation-content summary::-webkit-details-marker {
+            display: none; /* Hide default marker for Chrome/Safari */
+        }
+
+        /* Custom arrow using a pseudo-element */
+        #documentation-content summary::after {
+            content: "▶";
+            font-size: 0.7em;
+            margin-left: 0.5rem;
+            transition: transform 0.2s ease-in-out;
+            transform: rotate(0deg);
+            color: #656d76;
+        }
+
+        #documentation-content details[open] > summary::after {
+            transform: rotate(90deg);
+        }
+
+        /* The content/answer section */
+        #documentation-content details > div,
+        #documentation-content details > p,
+        #documentation-content details > ul,
+        #documentation-content details > ol,
+        #documentation-content details > blockquote,
+        #documentation-content details > pre {
+            padding: 0 1rem 1rem 1rem;
+        }
+
+        #documentation-content details > summary + * {
+            border-top: 1px solid #d0d7de;
+            margin-top: 0;
+        }
+
+        /* Dark mode support for details/summary */
+        html[class~="dark"] #documentation-content details {
+            background-color: #161b22;
+            border-color: #30363d;
+        }
+
+        html[class~="dark"] #documentation-content details[open] {
+            background-color: #0d1117;
+        }
+
+        html[class~="dark"] #documentation-content summary {
+            color: #e6edf3;
+        }
+
+        html[class~="dark"] #documentation-content summary::after {
+            color: #8b949e;
+        }
+
+        html[class~="dark"] #documentation-content details > summary + * {
+            border-top-color: #30363d;
+        }
+
+        /* Dark mode media query backup */
+        @media (prefers-color-scheme: dark) {
+            #documentation-content details {
+                background-color: #161b22;
+                border-color: #30363d;
+            }
+
+            #documentation-content details[open] {
+                background-color: #0d1117;
+            }
+
+            #documentation-content summary {
+                color: #e6edf3;
+            }
+
+            #documentation-content summary::after {
+                color: #8b949e;
+            }
+
+            #documentation-content details > summary + * {
+                border-top-color: #30363d;
+            }
+        }
+        
+        /* --- Image styling for documentation --- */
+        #documentation-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin: 16px 0;
+        }
+        
+        #documentation-content img[width] {
+            max-width: 100%;
+        }
+        
+        /* Inline images (with specific styling) */
+        #documentation-content img[style*="inline"] {
+            margin: 0;
+            border-radius: 3px;
+        }
+        
+        /* Badge/shield images */
+        #documentation-content img[src*="shields.io"],
+        #documentation-content img[src*="badge"] {
+            margin: 4px 2px;
+            border-radius: 0;
+        }
+        
+        /* Center-aligned images */
+        #documentation-content div[align="center"] img {
+            display: block;
+            margin: 24px auto;
+        }
+        
+        /* Icon-sized images */
+        #documentation-content img[width="24"],
+        #documentation-content img[width="48"] {
+            margin: 0 4px;
+            vertical-align: middle;
+        }
+        
+        /* Dark mode image adjustments */
+        html[class~="dark"] #documentation-content img {
+            opacity: 0.9;
+        }
+        
+        html[class~="dark"] #documentation-content img[src$=".svg"] {
+            filter: brightness(0.9);
+        }
     </style>
 @endpush
 
@@ -786,7 +855,28 @@
     @if($doc)
         <x-filament::section>
             <div class="prose prose-lg max-w-none dark:prose-invert" id="documentation-content">
-                <?php echo $doc->rendered_content; ?>
+                <!-- Debug: Check what we're actually outputting -->
+                <div style="display: none;" id="debug-info">
+                    Raw content: {{ Str::limit($doc->content, 50) }}<br>
+                    Rendered content: {{ Str::limit(strip_tags($doc->rendered_content), 50) }}<br>
+                    First 100 chars of rendered: {{ Str::limit($doc->rendered_content, 100) }}
+                </div>
+                <?php 
+                    // Test direct markdown conversion to isolate the issue using fully qualified names
+                    $environment = new \League\CommonMark\Environment\Environment([
+                        'html_input' => 'allow', // Allow HTML for details/summary accordion elements
+                        'allow_unsafe_links' => false,
+                        'max_nesting_level' => PHP_INT_MAX,
+                    ]);
+                    
+                    $environment->addExtension(new \League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension);
+                    $environment->addExtension(new \League\CommonMark\Extension\GithubFlavoredMarkdownExtension);
+                    
+                    $converter = new \League\CommonMark\MarkdownConverter($environment);
+                    $content = $doc->getContentWithoutFrontMatter();
+                    
+                    echo $converter->convert($content)->getContent();
+                ?>
             </div>
         </x-filament::section>
     @else

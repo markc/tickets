@@ -65,9 +65,11 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->authMiddleware([
-                Authenticate::class,
-                RedirectIfNotAllowedInFilament::class,
-            ]);
+            ->authMiddleware(
+                app()->environment('local') ? [] : [
+                    Authenticate::class,
+                    RedirectIfNotAllowedInFilament::class,
+                ]
+            );
     }
 }

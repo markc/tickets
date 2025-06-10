@@ -66,7 +66,7 @@ class Documentation extends Model
     {
         // Create environment with GitHub-flavored markdown extensions
         $environment = new Environment([
-            'html_input' => 'strip',
+            'html_input' => 'allow', // Allow HTML for details/summary accordion elements
             'allow_unsafe_links' => false,
             'max_nesting_level' => PHP_INT_MAX,
         ]);

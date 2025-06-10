@@ -348,13 +348,48 @@ TIKM is built with [Laravel][laravel] and uses [Filament][filament] for the admi
 
 ### Basic Image
 
-![TIKM Logo](https://via.placeholder.com/200x100/4F46E5/FFFFFF?text=TIKM)
+![TIKM Logo](/img/tikm-logo.svg)
 
 ### Image with Link
 
-[![Laravel](https://img.shields.io/badge/Laravel-12.x-red.svg)](https://laravel.com)
-[![PHP](https://img.shields.io/badge/PHP-8.3+-blue.svg)](https://php.net)
-[![Filament](https://img.shields.io/badge/Filament-3.3-orange.svg)](https://filamentphp.com)
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+
+[![PHP](https://img.shields.io/badge/PHP-8.3+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
+
+[![Filament](https://img.shields.io/badge/Filament-3.3-F59E0B?style=for-the-badge&logo=filament&logoColor=white)](https://filamentphp.com)
+
+### Local Icons and Assets
+
+Documentation section icons:
+
+![API Reference](/img/api-icon.svg) ![Deployment Guide](/img/deployment-icon.svg) ![User Guide](/img/user-guide-icon.svg)
+
+### Image Sizing and Alignment
+
+<div align="center">
+  <img src="/img/tikm-logo.svg" alt="TIKM Logo" width="300"/>
+</div>
+
+You can also use HTML for more control over image presentation:
+
+<img src="/img/api-icon.svg" alt="API Icon" width="24" height="24" style="display: inline; vertical-align: middle;"> API Documentation
+
+<img src="/img/user-guide-icon.svg" alt="User Guide Icon" width="24" height="24" style="display: inline; vertical-align: middle;"> User Guides
+
+### Screenshots and Documentation Assets
+
+For documentation that includes screenshots or interface examples:
+
+![TIKM Documentation Index](/img/screenshots/documentation-index.png)
+
+*Example of how interface screenshots appear in documentation*
+
+### Best Practices for Images
+
+1. **Use descriptive alt text** for accessibility
+2. **Optimize image sizes** - keep file sizes reasonable
+3. **Use SVG for logos and icons** - they scale better
+4. **Provide local fallbacks** for external images when possible
 
 ## Horizontal Rules
 
