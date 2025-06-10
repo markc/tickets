@@ -8,7 +8,7 @@ class DateTimeWidget extends Widget
 {
     protected static string $view = 'filament.widgets.date-time-widget';
 
-    protected int | string | array $columnSpan = [
+    protected int|string|array $columnSpan = [
         'md' => 1,
         'lg' => 1,
     ];

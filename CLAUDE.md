@@ -50,6 +50,27 @@ composer dev  # Runs PHP server, queue listener, log viewer, and Vite concurrent
 # Auto-commits style fixes when needed
 ```
 
+### Git Workflow Scripts
+**IMPORTANT**: Always use the custom git workflow scripts to prevent missed merges and orphaned branches.
+
+```bash
+# Start new feature work
+./scripts/git-start.sh [branch-name]    # Creates feature branch from latest main
+
+# Complete feature work  
+./scripts/git-finish.sh [commit-message] # Formats, commits, creates PR, merges, and cleans up
+
+# Emergency cleanup
+./scripts/git-cleanup.sh                # Removes merged branches and orphaned remotes
+```
+
+**Why these scripts prevent missed merges:**
+- Verifies PR is actually merged before switching branches
+- Waits for auto-merge completion with fallback to immediate merge
+- Double-checks changes are synced to local main
+- Cleans up both local and remote branches automatically
+- Provides verification status at completion
+
 ### Code Style Management
 ```bash
 ./vendor/bin/pint         # Fix PHP code style locally
