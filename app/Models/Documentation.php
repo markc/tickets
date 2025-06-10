@@ -6,7 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
-use League\CommonMark\CommonMarkConverter;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
+use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
+use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
+use League\CommonMark\MarkdownConverter;
+use Spatie\CommonMarkHighlighter\FencedCodeRenderer;
+use Spatie\CommonMarkHighlighter\IndentedCodeRenderer;
 
 class Documentation extends Model
 {
@@ -61,12 +68,26 @@ class Documentation extends Model
 
     public function getRenderedContentAttribute(): string
     {
-        $converter = new CommonMarkConverter([
+        // Create environment with GitHub-flavored markdown extensions
+        $environment = new Environment([
             'html_input' => 'strip',
             'allow_unsafe_links' => false,
+            'max_nesting_level' => PHP_INT_MAX,
         ]);
 
-        return $converter->convert($this->content)->getContent();
+        // Add core CommonMark functionality
+        $environment->addExtension(new CommonMarkCoreExtension);
+
+        // Add GitHub-flavored markdown extensions (includes tables, strikethrough, autolinks, task lists)
+        $environment->addExtension(new GithubFlavoredMarkdownExtension);
+
+        // Add syntax highlighting renderers
+        $environment->addRenderer(FencedCode::class, new FencedCodeRenderer);
+        $environment->addRenderer(IndentedCode::class, new IndentedCodeRenderer);
+
+        $converter = new MarkdownConverter($environment);
+
+        return $converter->convert($this->getContentWithoutFrontMatter())->getContent();
     }
 
     public function getExcerptAttribute(): string

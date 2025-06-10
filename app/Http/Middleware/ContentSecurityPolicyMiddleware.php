@@ -47,12 +47,16 @@ class ContentSecurityPolicyMiddleware
         $styleSrc = "'self' 'unsafe-inline' fonts.googleapis.com fonts.bunny.net cdn.jsdelivr.net";
         $connectSrc = "'self'";
 
-        // Add development-specific rules for Vite
+        // Add development-specific rules for Vite and WebSockets
         if (app()->environment('local')) {
-            $scriptSrc .= " localhost:* 127.0.0.1:* [::1]:*";
-            $styleSrc .= " localhost:* 127.0.0.1:* [::1]:*";
-            $connectSrc .= " ws://localhost:* ws://127.0.0.1:* ws://[::1]:* wss://localhost:* wss://127.0.0.1:* wss://[::1]:* http://localhost:* http://127.0.0.1:* http://[::1]:*";
+            $scriptSrc .= ' localhost:* 127.0.0.1:* [::1]:*';
+            $styleSrc .= ' localhost:* 127.0.0.1:* [::1]:*';
+            $connectSrc .= ' ws://localhost:* ws://127.0.0.1:* ws://[::1]:* wss://localhost:* wss://127.0.0.1:* wss://[::1]:* http://localhost:* http://127.0.0.1:* http://[::1]:*';
         }
+
+        // Add WebSocket support for Laravel Reverb
+        $connectSrc .= ' ws://'.config('reverb.apps.apps.0.options.host', 'localhost').':'.config('reverb.servers.reverb.port', '8080');
+        $connectSrc .= ' wss://'.config('reverb.apps.apps.0.options.host', 'localhost').':'.config('reverb.servers.reverb.port', '8080');
 
         $directives = [
             "default-src 'self'",

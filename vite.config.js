@@ -8,4 +8,8 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        host: '127.0.0.1', // Force IPv4 localhost instead of IPv6 [::1]
+        port: 5173,
+    },
 });
