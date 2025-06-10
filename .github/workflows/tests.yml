@@ -20,6 +20,7 @@ jobs:
       with:
         php-version: '8.3'
         extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, iconv, json, mbstring, pdo, mailparse
+        ini-values: post_max_size=256M, upload_max_filesize=256M, max_execution_time=300
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -36,8 +37,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-php-
 
+    - name: Check mailparse extension
+      run: php -m | grep mailparse || echo "mailparse extension not found, using --ignore-platform-req"
+
     - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
+      run: composer install --prefer-dist --no-progress --ignore-platform-req=ext-mailparse
 
     - name: Install NPM dependencies
       run: npm ci
