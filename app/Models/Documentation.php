@@ -8,12 +8,8 @@ use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
-use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
-use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\MarkdownConverter;
-use Spatie\CommonMarkHighlighter\FencedCodeRenderer;
-use Spatie\CommonMarkHighlighter\IndentedCodeRenderer;
 
 class Documentation extends Model
 {
@@ -80,10 +76,6 @@ class Documentation extends Model
 
         // Add GitHub-flavored markdown extensions (includes tables, strikethrough, autolinks, task lists)
         $environment->addExtension(new GithubFlavoredMarkdownExtension);
-
-        // Add syntax highlighting renderers
-        $environment->addRenderer(FencedCode::class, new FencedCodeRenderer);
-        $environment->addRenderer(IndentedCode::class, new IndentedCodeRenderer);
 
         $converter = new MarkdownConverter($environment);
 
