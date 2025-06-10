@@ -42,13 +42,25 @@ class ContentSecurityPolicyMiddleware
         // Store nonce for use in views
         app()->instance('csp-nonce', $nonce);
 
+        // Base directives
+        $scriptSrc = "'self' 'unsafe-inline' 'unsafe-eval' cdn.jsdelivr.net unpkg.com";
+        $styleSrc = "'self' 'unsafe-inline' fonts.googleapis.com fonts.bunny.net cdn.jsdelivr.net";
+        $connectSrc = "'self'";
+
+        // Add development-specific rules for Vite
+        if (app()->environment('local')) {
+            $scriptSrc .= " localhost:* 127.0.0.1:* [::1]:*";
+            $styleSrc .= " localhost:* 127.0.0.1:* [::1]:*";
+            $connectSrc .= " ws://localhost:* ws://127.0.0.1:* ws://[::1]:* wss://localhost:* wss://127.0.0.1:* wss://[::1]:* http://localhost:* http://127.0.0.1:* http://[::1]:*";
+        }
+
         $directives = [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' cdn.jsdelivr.net unpkg.com", // Needed for Filament
-            "style-src 'self' 'unsafe-inline' fonts.googleapis.com fonts.bunny.net cdn.jsdelivr.net", // Needed for Tailwind
+            "script-src {$scriptSrc}",
+            "style-src {$styleSrc}",
             "font-src 'self' fonts.gstatic.com fonts.bunny.net",
             "img-src 'self' data: blob: ui-avatars.com",
-            "connect-src 'self'",
+            "connect-src {$connectSrc}",
             "media-src 'self'",
             "object-src 'none'",
             "child-src 'self'",
@@ -56,12 +68,6 @@ class ContentSecurityPolicyMiddleware
             "form-action 'self'",
             "base-uri 'self'",
         ];
-
-        // Add development-specific rules
-        if (app()->environment('local')) {
-            $directives[] = "script-src 'self' 'unsafe-inline' 'unsafe-eval' localhost:* 127.0.0.1:* cdn.jsdelivr.net unpkg.com";
-            $directives[] = "connect-src 'self' ws://localhost:* ws://127.0.0.1:* wss://localhost:* wss://127.0.0.1:*";
-        }
 
         return implode('; ', $directives);
     }
