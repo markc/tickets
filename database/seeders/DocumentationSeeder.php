@@ -94,6 +94,19 @@ class DocumentationSeeder extends Seeder
                 'created_by' => $admin?->id,
                 'updated_by' => $admin?->id,
             ],
+            [
+                'title' => 'Frequently Asked Questions',
+                'slug' => 'faq',
+                'file_path' => 'user-guide/faq.md',
+                'description' => 'Common questions and answers about TIKM with accordion interface',
+                'category' => 'user-guide',
+                'order' => 10,
+                'version' => '1.0',
+                'content' => file_get_contents(base_path('docs/user-guide/faq.md')),
+                'is_published' => true,
+                'created_by' => $admin?->id,
+                'updated_by' => $admin?->id,
+            ],
 
             // Administration
             [

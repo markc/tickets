@@ -76,7 +76,7 @@ class TicketResource extends Resource
                             ->searchable()
                             ->preload()
                             ->nullable()
-                            ->default(fn () => auth()->user()->role === 'agent' ? auth()->id() : null),
+                            ->default(fn () => safe_auth_user()->role === 'agent' ? safe_auth_id() : null),
                     ])
                     ->columns(2),
             ]);
@@ -241,8 +241,8 @@ class TicketResource extends Resource
         $query = parent::getEloquentQuery()
             ->with(['status', 'priority', 'office', 'creator', 'assignedTo']);
 
-        if (auth()->user()->role === 'agent') {
-            $officeIds = auth()->user()->offices()->pluck('offices.id');
+        if (safe_auth_user()->role === 'agent') {
+            $officeIds = safe_auth_user()->offices()->pluck('offices.id');
             $query->whereIn('office_id', $officeIds);
         }
 

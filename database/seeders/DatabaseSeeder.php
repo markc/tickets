@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             FAQSeeder::class,
             EmailTemplateSeeder::class,
+            DocumentationSeeder::class,
         ]);
     }
 }
