@@ -21,6 +21,11 @@ Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'ind
 
 Route::get('/faq', [\App\Http\Controllers\FAQController::class, 'index'])->name('faq.index');
 
+// Documentation routes
+Route::get('/docs', [\App\Http\Controllers\DocumentationController::class, 'index'])->name('documentation.index');
+Route::get('/docs/search', [\App\Http\Controllers\DocumentationController::class, 'search'])->name('documentation.search');
+Route::get('/docs/{documentation}', [\App\Http\Controllers\DocumentationController::class, 'show'])->name('documentation.show');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
