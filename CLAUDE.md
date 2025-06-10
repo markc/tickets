@@ -56,6 +56,17 @@ composer dev  # Runs PHP server, queue listener, log viewer, and Vite concurrent
 ./vendor/bin/pint --test  # Check style without fixing (used in CI)
 ```
 
+### Git Workflow for Upstream Changes
+```bash
+# IMPORTANT: Always use these commands when committing changes upstream
+./scripts/git-start.sh [branch-name]    # Start a new feature branch
+# ... make your changes and commits ...
+./scripts/git-finish.sh [commit-msg]    # Format, commit, PR, and merge
+
+# These scripts ensure proper branching workflow and auto-formatting
+# NEVER commit directly to main - always use feature branches
+```
+
 ## Development Commands
 
 ### Environment Management

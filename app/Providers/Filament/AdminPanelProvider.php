@@ -49,7 +49,7 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 \App\Filament\Widgets\AnalyticsOverviewWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                \App\Filament\Widgets\DateTimeWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
